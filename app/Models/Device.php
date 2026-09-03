@@ -14,6 +14,13 @@ class Device extends Model implements HasMedia
 
     protected $fillable = ['brand_id', 'name', 'slug', 'release_date', 'image', 'status'];
 
+    protected function casts(): array
+    {
+        return [
+            'release_date' => 'date',
+        ];
+    }
+
     public function brand()
     {
         return $this->belongsTo(Brand::class);
