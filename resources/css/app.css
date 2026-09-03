@@ -1,0 +1,208 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+:root {
+    --phonespecs-page: #f1f3f5;
+    --phonespecs-border: #e2e6ea;
+    --phonespecs-muted: #6c757d;
+}
+
+body {
+    background: var(--phonespecs-page);
+    color: #212529;
+}
+
+.site-header .navbar-brand {
+    font-weight: 700;
+    letter-spacing: -.02em;
+}
+
+.site-header .nav-link {
+    border-bottom: 2px solid transparent;
+}
+
+.site-header .nav-link.active {
+    border-bottom-color: #fff;
+    color: #fff;
+}
+
+.category-bar {
+    background: #fff;
+    border-bottom: 1px solid var(--phonespecs-border);
+}
+
+.category-bar .nav-link {
+    color: var(--phonespecs-muted);
+    font-size: .875rem;
+    padding: .65rem 1rem;
+}
+
+.category-bar .nav-link:hover,
+.category-bar .nav-link.active {
+    color: #0d6efd;
+}
+
+.page-shell {
+    max-width: 1180px;
+}
+
+.ad-placeholder {
+    align-items: center;
+    background: #e9ecef;
+    border: 1px dashed #ced4da;
+    color: #868e96;
+    display: flex;
+    font-size: .7rem;
+    justify-content: center;
+    letter-spacing: .08em;
+    min-height: 92px;
+    text-transform: uppercase;
+}
+
+.ad-placeholder--wide {
+    min-height: 118px;
+}
+
+.content-card,
+.device-card {
+    border-color: var(--phonespecs-border);
+    box-shadow: 0 1px 2px rgba(33, 37, 41, .04);
+}
+
+.device-card .device-image {
+    align-items: center;
+    background: #f8f9fa;
+    display: flex;
+    height: 160px;
+    justify-content: center;
+    object-fit: contain;
+    padding: 1rem;
+    width: 100%;
+}
+
+.device-card .card-title {
+    font-size: .95rem;
+}
+
+.sidebar-title {
+    font-size: .8rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.device-detail-header,
+.comparison-panel,
+.article-card {
+    border-color: var(--phonespecs-border);
+    box-shadow: 0 1px 2px rgba(33, 37, 41, .04);
+}
+
+.device-detail-image {
+    align-items: center;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    min-height: 280px;
+    padding: 2rem;
+}
+
+.device-detail-image img {
+    max-height: 320px;
+    object-fit: contain;
+}
+
+.specification-section + .specification-section {
+    margin-top: 2rem;
+}
+
+.specification-section .table {
+    margin-bottom: 0;
+}
+
+.article-image {
+    height: 190px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.article-body {
+    line-height: 1.75;
+    white-space: pre-line;
+}
+
+.comparison-table th:first-child {
+    min-width: 150px;
+}
+
+@media (max-width: 767.98px) {
+    .device-detail-image {
+        min-height: 220px;
+    }
+
+    .comparison-table {
+        font-size: .875rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .site-header .nav-link.active {
+        border-bottom: 0;
+        border-left: 2px solid #fff;
+        padding-left: .75rem;
+    }
+
+    .category-bar .nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    .category-bar .nav-link {
+        white-space: nowrap;
+    }
+    .device-hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+}
+
+.device-hero-image {
+    max-height: 280px;
+    width: 100%;
+    object-fit: contain;
+}
+
+.quick-spec-box {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+}
+
+.quick-spec-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    opacity: 0.6;
+    letter-spacing: 0.03em;
+}
+
+.quick-spec-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.device-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.device-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.device-image {
+    height: 160px;
+    width: 100%;
+    object-fit: contain;
+    background: #f8f9fa;
+    padding: 10px;
+}
+}
