@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DeviceController as AdminDeviceController;
 use App\Http\Controllers\CompareController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\HomeController;
@@ -19,3 +22,19 @@ Route::get('/news/{newsPost:slug}', [NewsController::class, 'show'])->name('news
 Route::get('/compare', [CompareController::class, 'index'])->name('compare.index');
 Route::view('/privacy', 'legal.privacy')->name('privacy');
 Route::view('/terms', 'legal.terms')->name('terms');
+
+Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])
+    ->middleware('guest')
+    ->name('admin.login');
+Route::post('/admin/login', [AdminAuthController::class, 'login'])
+    ->middleware('guest')
+    ->name('admin.login.submit');
+
+Route::middleware('auth')
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function (): void {
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::resource('devices', AdminDeviceController::class)->except(['show']);
+    });
