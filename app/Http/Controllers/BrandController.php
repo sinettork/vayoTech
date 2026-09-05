@@ -8,6 +8,16 @@ use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
+    public function index()
+    {
+        $brands = Brand::query()
+            ->withCount('devices')
+            ->orderBy('name')
+            ->get();
+
+        return view('brands.index', compact('brands'));
+    }
+
     public function show(Brand $brand, Request $request)
     {
         $query = $brand->devices()
