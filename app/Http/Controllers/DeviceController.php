@@ -78,6 +78,7 @@ class DeviceController extends Controller
         $device->load([
             'brand',
             'specs' => fn ($query) => $query->orderBy('sort_order'),
+            'variants',
         ]);
 
         $groupedSpecs = $device->specs->groupBy('category');
