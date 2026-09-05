@@ -130,7 +130,7 @@
     <div class="d-flex flex-wrap gap-2 mb-4">
 
         @foreach ($groupedSpecs as $category => $specs)
-            @php($categorySlug = IlluminateSupportStr::slug($category))
+            @php($categorySlug = \Illuminate\Support\Str::slug($category))
 
             <a
                 href="#spec-{{ $categorySlug }}"
@@ -145,7 +145,7 @@
 
     @foreach ($groupedSpecs as $category => $specs)
 
-        @php($categorySlug = IlluminateSupportStr::slug($category))
+        @php($categorySlug = \Illuminate\Support\Str::slug($category))
 
         <section
             id="spec-{{ $categorySlug }}"
