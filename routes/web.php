@@ -62,5 +62,6 @@ Route::middleware(['auth', 'admin'])
         Route::resource('news', AdminNewsController::class)->except(['show']);
 
         Route::get('/imports', [AdminImportController::class, 'index'])->name('imports.index');
+        Route::post('/imports/preview', [AdminImportController::class, 'preview'])->name('imports.preview');
         Route::post('/imports', [AdminImportController::class, 'store'])->name('imports.store');
     });
