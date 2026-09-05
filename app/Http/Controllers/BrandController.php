@@ -9,7 +9,9 @@ class BrandController extends Controller
 {
     public function show(Brand $brand, Request $request)
     {
-        $query = $brand->devices()->orderByDesc('release_date');
+        $query = $brand->devices()
+            ->with('brand')
+            ->orderByDesc('release_date');
 
         if ($request->filled('status')) {
             $query->where('status', $request->query('status'));
