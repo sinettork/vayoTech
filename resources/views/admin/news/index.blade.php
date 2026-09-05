@@ -3,62 +3,64 @@
 @section('title', 'News')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 mb-1">News</h1>
-        <p class="text-muted mb-0">Manage website articles.</p>
+<div class="mb-4">
+    <div class="sidebar-title mb-2">Content</div>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
+        <div>
+            <h1 class="h3 mb-1">News</h1>
+            <p class="text-muted mb-0">Manage website articles and publication status.</p>
+        </div>
+        <a href="{{ route('admin.news.create') }}" class="btn btn-dark">Add News</a>
     </div>
-    <a href="{{ route('admin.news.create') }}" class="btn btn-dark">Add News</a>
 </div>
 
 <form method="GET" action="{{ route('admin.news.index') }}" class="mb-4">
     <div class="row g-2">
-        <div class="col-md-10">
-            <input type="search" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search news...">
+        <div class="col-lg-10">
+            <input type="search" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search title or content...">
         </div>
-        <div class="col-md-2 d-grid">
+        <div class="col-lg-2 d-grid">
             <button type="submit" class="btn btn-outline-dark">Search</button>
         </div>
     </div>
 </form>
 
-<div class="table-responsive">
-    <table class="table align-middle">
+<div class="table-responsive bg-white border">
+    <table class="table align-middle mb-0">
         <thead>
         <tr>
             <th>Article</th>
-            <th>Published</th>
+            <th>Publication</th>
             <th>Status</th>
             <th class="text-end">Actions</th>
         </tr>
         </thead>
         <tbody>
         @forelse($posts as $post)
+            @php
+                $status = !$post->published_at
+                    ? 'Draft'
+                    : ($post->published_at->isFuture() ? 'Scheduled' : 'Published');
+            @endphp
             <tr>
                 <td>
                     <div class="d-flex align-items-center gap-3">
                         @if($post->image)
-                            <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" width="72" height="50" class="rounded border" style="object-fit:cover;">
+                            <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" width="72" height="50" class="border" style="object-fit:cover;">
                         @endif
-                        <div>
-                            <div class="fw-semibold">{{ $post->title }}</div>
-                            <div class="text-muted small">{{ $post->slug }}</div>
+                        <div class="min-w-0">
+                            <div class="fw-semibold text-truncate">{{ $post->title }}</div>
+                            <div class="text-muted small text-truncate">{{ $post->slug }}</div>
                         </div>
                     </div>
                 </td>
-                <td>{{ $post->published_at?->format('M d, Y H:i') ?? 'Not published' }}</td>
-                <td>
-                    @if(!$post->published_at)
-                        Draft
-                    @elseif($post->published_at->isFuture())
-                        Scheduled
-                    @else
-                        Published
-                    @endif
+                <td class="small">
+                    {{ $post->published_at?->format('M d, Y H:i') ?? 'Not published' }}
                 </td>
-                <td class="text-end">
+                <td>{{ $status }}</td>
+                <td class="text-end text-nowrap">
                     @if($post->published_at && $post->published_at->isPast())
-                        <a href="{{ route('news.show', $post->slug) }}" target="_blank" class="btn btn-sm btn-outline-secondary">View</a>
+                        <a href="{{ route('news.show', $post->slug) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">View</a>
                     @endif
                     <a href="{{ route('admin.news.edit', $post) }}" class="btn btn-sm btn-outline-dark">Edit</a>
                     <form action="{{ route('admin.news.destroy', $post) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this news post?');">
@@ -77,5 +79,7 @@
     </table>
 </div>
 
-{{ $posts->links() }}
+@if($posts->hasPages())
+    <div class="mt-4">{{ $posts->links() }}</div>
+@endif
 @endsection
