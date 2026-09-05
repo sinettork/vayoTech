@@ -56,7 +56,7 @@ class BrandController extends Controller
                 ->map(fn (array $result): array => [
                     'name' => $result['name'] ?? null,
                     'domain' => $brandfetch->normalizeDomain($result['domain'] ?? ''),
-                    'icon' => $result['icon'] ?? null,
+                    'logoUrl' => $brandfetch->logoUrl($result['domain'] ?? null),
                     'brandId' => $result['brandId'] ?? null,
                 ])
                 ->filter(fn (array $result): bool => filled($result['name']) && filled($result['domain']))
