@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('brands', function (Blueprint $table) {
+        Schema::create('brands', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
@@ -16,9 +16,10 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamps();
         });
-        function down(): void
-        {
-            Schema::dropIfExists('brands');
-        }
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('brands');
     }
 };
