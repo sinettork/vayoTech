@@ -5,62 +5,125 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Admin') - VayoTech</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        body { background: #f5f7fa; }
-        .admin-sidebar { min-height: calc(100vh - 56px); }
-        .admin-stat { border: 0; box-shadow: 0 2px 12px rgba(0,0,0,.05); }
-        .table img { object-fit: contain; background: #f8f9fa; }
-        .admin-content { min-height: calc(100vh - 56px); }
-    </style>
     @stack('styles')
 </head>
-<body>
-<nav class="navbar navbar-dark bg-dark navbar-expand-lg">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">VayoTech Admin</a>
-        <div class="d-flex align-items-center gap-3 text-white">
-            <a class="btn btn-outline-light btn-sm" href="{{ route('home') }}" target="_blank">View Site</a>
-            <span class="small d-none d-md-inline">{{ auth()->user()->name }}</span>
-            <form method="POST" action="{{ route('admin.logout') }}">
-                @csrf
-                <button class="btn btn-danger btn-sm" type="submit">Logout</button>
-            </form>
-        </div>
-    </div>
-</nav>
+<body class="admin-body">
 
-<div class="container-fluid">
-    <div class="row">
-        <aside class="col-lg-2 col-md-3 bg-white border-end admin-sidebar p-3">
-            <div class="list-group list-group-flush">
-                <a class="list-group-item list-group-item-action {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
-                <a class="list-group-item list-group-item-action {{ request()->routeIs('admin.devices.*') ? 'active' : '' }}" href="{{ route('admin.devices.index') }}">Devices</a>
-                <a class="list-group-item list-group-item-action {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}" href="{{ route('admin.brands.index') }}">Brands</a>
-                <a class="list-group-item list-group-item-action {{ request()->routeIs('admin.news.*') ? 'active' : '' }}" href="{{ route('admin.news.index') }}">News</a>
+<div class="admin-shell">
+
+    <header class="site-header admin-header">
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container-fluid page-shell">
+                <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
+                    VayoTech Admin
+                </a>
+
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-white-50 small d-none d-md-inline">
+                        {{ auth()->user()->name }}
+                    </span>
+
+                    <a
+                        class="btn btn-outline-light btn-sm"
+                        href="{{ route('home') }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        View Site
+                    </a>
+
+                    <form method="POST" action="{{ route('admin.logout') }}">
+                        @csrf
+                        <button class="btn btn-light btn-sm" type="submit">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="admin-main">
+
+        <aside class="admin-sidebar">
+            <div class="p-3">
+                <div class="sidebar-title mb-2">
+                    Administration
+                </div>
+
+                <nav class="nav flex-column">
+
+                    <a
+                        class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                        href="{{ route('admin.dashboard') }}"
+                    >
+                        Dashboard
+                    </a>
+
+                    <a
+                        class="nav-link {{ request()->routeIs('admin.devices.*') ? 'active' : '' }}"
+                        href="{{ route('admin.devices.index') }}"
+                    >
+                        Devices
+                    </a>
+
+                    <a
+                        class="nav-link {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}"
+                        href="{{ route('admin.brands.index') }}"
+                    >
+                        Brands
+                    </a>
+
+                    <a
+                        class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}"
+                        href="{{ route('admin.news.index') }}"
+                    >
+                        News
+                    </a>
+
+                </nav>
+            </div>
+
+            <div class="admin-sidebar-footer p-3 border-top">
+                <div class="small text-secondary">
+                    Laravel {{ app()->version() }}
+                </div>
             </div>
         </aside>
 
-        <main class="col-lg-10 col-md-9 admin-content p-4">
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+        <main class="admin-content">
+            <div class="page-shell">
 
-            @if($errors->any())
-                <div class="alert alert-danger">
-                    <strong>Please fix the following:</strong>
-                    <ul class="mb-0 mt-2">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
 
-            @yield('content')
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        <strong>Please fix the following:</strong>
+                        <ul class="mb-0 mt-2">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @yield('content')
+
+            </div>
         </main>
+
     </div>
 </div>
 
