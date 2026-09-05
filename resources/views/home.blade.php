@@ -96,21 +96,12 @@
         </div>
 
         <section class="mb-5">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <div>
-                    <span class="text-primary small fw-semibold">Browse by manufacturer</span>
-                    <h2 class="h3 mb-1">Phone brands</h2>
-                    <p class="text-muted mb-0">Find phones by brand and discover the full device lineup.</p>
-                </div>
-                <a href="{{ route('brands.index') }}" class="btn btn-outline-primary btn-sm">View all</a>
-            </div>
-
             <div class="card content-card">
                 <div class="card-header bg-dark text-white">
-                    <strong class="sidebar-title">Phone brands</strong>
+                    <strong class="sidebar-title">Explore brands</strong>
                 </div>
                 <div class="list-group list-group-flush phone-finder-list">
-                    @foreach ($brands->take(8) as $brand)
+                    @foreach ($brands as $brand)
                         <a href="{{ route('brands.show', $brand) }}" class="list-group-item list-group-item-action">
                             <div class="d-flex align-items-center gap-2">
                                 @if($brand->brandfetch_logo_url)
