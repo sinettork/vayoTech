@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
@@ -23,7 +24,7 @@ class Device extends Model implements HasMedia
         ];
     }
 
-    public function brand()
+    public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
     }
@@ -31,6 +32,11 @@ class Device extends Model implements HasMedia
     public function specs(): HasMany
     {
         return $this->hasMany(DeviceSpec::class);
+    }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(DeviceVariant::class)->orderBy('sort_order')->orderBy('id');
     }
 
     public function groupedSpecs()
