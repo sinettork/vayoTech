@@ -4,6 +4,401 @@
 @section('meta_description', 'Compare up to three smartphones side by side with quick specs and detailed specifications.')
 
 @section('content')
+<style>
+    .compare-page {
+        --compare-border: #e2e6ea;
+        --compare-muted: #6c757d;
+        --compare-surface: #fff;
+        --compare-soft: #f8f9fa;
+    }
+
+    .compare-workspace {
+        background: var(--compare-surface);
+        border: 1px solid var(--compare-border);
+        border-radius: .5rem;
+        box-shadow: 0 1px 2px rgba(33, 37, 41, .04);
+        overflow: hidden;
+    }
+
+    .compare-slots {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .compare-slot {
+        min-width: 0;
+        min-height: 430px;
+        padding: 1rem;
+        border-right: 1px solid var(--compare-border);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .compare-slot:last-child {
+        border-right: 0;
+    }
+
+    .compare-slot-search {
+        margin-bottom: 1rem;
+    }
+
+    .compare-search-label {
+        display: block;
+        margin-bottom: .45rem;
+        color: var(--compare-muted);
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .compare-search-input {
+        padding-left: 2.25rem;
+        border-color: #ced4da;
+        min-height: 44px;
+    }
+
+    .compare-search-input:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 .2rem rgba(13, 110, 253, .1);
+    }
+
+    .compare-search-icon {
+        position: absolute;
+        left: .8rem;
+        top: 50%;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+        color: #6c757d;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .compare-search-results {
+        position: absolute;
+        top: calc(100% + .35rem);
+        left: 0;
+        right: 0;
+        z-index: 30;
+        display: none;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--compare-border);
+        border-radius: .4rem;
+        box-shadow: 0 8px 24px rgba(33, 37, 41, .12);
+    }
+
+    .compare-search-results.is-visible {
+        display: block;
+    }
+
+    .compare-search-result {
+        width: 100%;
+        display: flex;
+        gap: .7rem;
+        align-items: center;
+        padding: .65rem .75rem;
+        border: 0;
+        border-bottom: 1px solid #f0f1f2;
+        background: #fff;
+        text-align: left;
+    }
+
+    .compare-search-result:last-child {
+        border-bottom: 0;
+    }
+
+    .compare-search-result:hover,
+    .compare-search-result:focus-visible {
+        background: #f8f9fa;
+        outline: 0;
+    }
+
+    .compare-result-thumb {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 1px solid var(--compare-border);
+        border-radius: .35rem;
+        background: #f8f9fa;
+        color: #adb5bd;
+    }
+
+    .compare-result-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .compare-result-copy {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .compare-result-copy strong {
+        font-size: .88rem;
+        color: #212529;
+    }
+
+    .compare-result-copy small {
+        color: var(--compare-muted);
+    }
+
+    .compare-search-empty {
+        padding: .8rem;
+        color: var(--compare-muted);
+        font-size: .85rem;
+    }
+
+    .compare-device-head {
+        position: relative;
+        display: grid;
+        grid-template-columns: 92px minmax(0, 1fr) auto;
+        gap: .8rem;
+        align-items: center;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--compare-border);
+    }
+
+    .compare-device-image-wrap {
+        width: 92px;
+        height: 116px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #edf0f2;
+        border-radius: .45rem;
+        background: var(--compare-soft);
+    }
+
+    .compare-device-image {
+        max-width: 100%;
+        max-height: 100%;
+        padding: .45rem;
+        object-fit: contain;
+    }
+
+    .compare-device-image-placeholder {
+        font-size: .7rem;
+        color: var(--compare-muted);
+    }
+
+    .compare-device-copy {
+        min-width: 0;
+    }
+
+    .compare-device-name {
+        margin: .15rem 0 .35rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .compare-remove {
+        align-self: start;
+        line-height: 1;
+        font-size: 1.15rem;
+        padding: .25rem .5rem;
+    }
+
+    .compare-quick-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: 1rem;
+        border-top: 1px solid #edf0f2;
+        border-left: 1px solid #edf0f2;
+    }
+
+    .compare-quick-item {
+        min-width: 0;
+        padding: .65rem .6rem;
+        border-right: 1px solid #edf0f2;
+        border-bottom: 1px solid #edf0f2;
+    }
+
+    .compare-quick-label {
+        display: block;
+        margin-bottom: .15rem;
+        color: var(--compare-muted);
+        font-size: .64rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+
+    .compare-quick-value {
+        display: block;
+        font-size: .76rem;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+    }
+
+    .compare-device-actions {
+        margin-top: auto;
+        padding-top: 1rem;
+    }
+
+    .compare-empty-state {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem 1rem;
+        color: #495057;
+    }
+
+    .compare-empty-icon {
+        width: 76px;
+        height: 108px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: #adb5bd;
+        border: 2px dashed #ced4da;
+        border-radius: 12px;
+    }
+
+    .compare-empty-icon svg {
+        width: 42px;
+        height: 42px;
+    }
+
+    .compare-table-panel {
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--compare-border);
+        border-radius: .5rem;
+        box-shadow: 0 1px 2px rgba(33, 37, 41, .04);
+    }
+
+    .compare-table-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1rem .85rem;
+        border-bottom: 1px solid var(--compare-border);
+    }
+
+    .compare-spec-table {
+        --bs-table-border-color: #e9ecef;
+    }
+
+    .compare-spec-table th,
+    .compare-spec-table td {
+        min-width: 170px;
+        padding: .8rem .85rem;
+        vertical-align: middle;
+    }
+
+    .compare-spec-table thead th {
+        background: #f8f9fa;
+        border-bottom: 1px solid var(--compare-border);
+    }
+
+    .compare-spec-table .compare-spec-name {
+        min-width: 155px;
+        position: sticky;
+        left: 0;
+        z-index: 3;
+        background: #fff;
+    }
+
+    .compare-spec-table thead .compare-spec-name {
+        background: #f8f9fa;
+    }
+
+    .compare-category-row th {
+        background: #212529;
+        color: #fff;
+        font-size: .76rem;
+        font-weight: 700;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        padding-top: .62rem;
+        padding-bottom: .62rem;
+    }
+
+    .compare-table-device {
+        color: #6c757d;
+        font-size: .7rem;
+        font-weight: 600;
+        margin-bottom: .1rem;
+        text-transform: uppercase;
+    }
+
+    .compare-value-different {
+        background: rgba(13, 110, 253, .045);
+    }
+
+    .compare-howto {
+        border-color: var(--compare-border);
+    }
+
+    .compare-howto-icon {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px dashed #adb5bd;
+        border-radius: .4rem;
+        color: #6c757d;
+        font-size: 1.25rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .compare-slots {
+            grid-template-columns: 1fr;
+        }
+
+        .compare-slot {
+            min-height: 330px;
+            border-right: 0;
+            border-bottom: 1px solid var(--compare-border);
+        }
+
+        .compare-slot:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .compare-slot {
+            padding: .85rem;
+        }
+
+        .compare-device-head {
+            grid-template-columns: 78px minmax(0, 1fr) auto;
+            gap: .65rem;
+        }
+
+        .compare-device-image-wrap {
+            width: 78px;
+            height: 102px;
+        }
+
+        .compare-device-name {
+            font-size: .95rem;
+        }
+
+        .compare-table-heading {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+
 <div class="compare-page">
     <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
         <div>
@@ -186,6 +581,13 @@
         return valid.length ? `${compareUrl}?devices=${valid.join(',')}` : compareUrl;
     };
 
+    const escapeHtml = (value) => String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+
     const renderResults = (input, resultsBox) => {
         const query = input.value.trim().toLowerCase();
         const currentSlot = Number(input.dataset.slot);
@@ -225,13 +627,6 @@
 
         resultsBox.classList.add('is-visible');
     };
-
-    const escapeHtml = (value) => String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
 
     document.querySelectorAll('.compare-search-input').forEach((input) => {
         const resultsBox = document.querySelector(`[data-results-for="${input.dataset.slot}"]`);
