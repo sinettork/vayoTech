@@ -149,5 +149,6 @@ acceptCookiesButton.addEventListener('click', function () {
 });
 </script>
 
+@stack('scripts')
 </body>
 </html>
