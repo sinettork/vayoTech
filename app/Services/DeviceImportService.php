@@ -7,11 +7,86 @@ use App\Models\DataSource;
 use App\Models\Device;
 use App\Models\FailedImportRow;
 use App\Models\Import;
+use App\Models\SpecDefinition;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class DeviceImportService
 {
+    private const SPEC_MAP = [
+        'network' => 'network_technology',
+        'network_technology' => 'network_technology',
+        'announced' => 'launch_announced',
+        'launch_announced' => 'launch_announced',
+        'launch_status' => 'launch_status',
+        'status' => 'launch_status',
+        'dimensions' => 'body_dimensions',
+        'body_dimensions' => 'body_dimensions',
+        'weight' => 'body_weight',
+        'body_weight' => 'body_weight',
+        'build' => 'body_build',
+        'body_build' => 'body_build',
+        'ip_rating' => 'body_ip_rating',
+        'water_and_dust_resistance' => 'body_ip_rating',
+        'headphone_jack' => 'body_headphone_jack',
+        'display' => 'display_type',
+        'display_type' => 'display_type',
+        'screen_size' => 'display_size',
+        'display_size' => 'display_size',
+        'resolution' => 'display_resolution',
+        'display_resolution' => 'display_resolution',
+        'refresh_rate' => 'display_refresh_rate',
+        'display_refresh_rate' => 'display_refresh_rate',
+        'brightness' => 'display_brightness',
+        'display_brightness' => 'display_brightness',
+        'hdr' => 'display_hdr',
+        'display_hdr' => 'display_hdr',
+        'os' => 'platform_os',
+        'platform_os' => 'platform_os',
+        'chipset' => 'platform_chipset',
+        'platform_chipset' => 'platform_chipset',
+        'cpu' => 'platform_cpu',
+        'platform_cpu' => 'platform_cpu',
+        'gpu' => 'platform_gpu',
+        'platform_gpu' => 'platform_gpu',
+        'ram' => 'memory_ram',
+        'memory_ram' => 'memory_ram',
+        'storage' => 'memory_storage',
+        'internal_storage' => 'memory_storage',
+        'memory_storage' => 'memory_storage',
+        'storage_type' => 'memory_storage_type',
+        'memory_storage_type' => 'memory_storage_type',
+        'card_slot' => 'memory_card_slot',
+        'memory_card_slot' => 'memory_card_slot',
+        'main_camera' => 'main_camera_setup',
+        'main_camera_setup' => 'main_camera_setup',
+        'main_camera_video' => 'main_camera_video',
+        'selfie_camera' => 'selfie_camera_setup',
+        'selfie_camera_setup' => 'selfie_camera_setup',
+        'selfie_camera_video' => 'selfie_camera_video',
+        'loudspeaker' => 'sound_loudspeaker',
+        'sound_loudspeaker' => 'sound_loudspeaker',
+        'headphone_out' => 'sound_headphone_out',
+        'sound_headphone_out' => 'sound_headphone_out',
+        'wifi' => 'comms_wifi',
+        'comms_wifi' => 'comms_wifi',
+        'bluetooth' => 'comms_bluetooth',
+        'comms_bluetooth' => 'comms_bluetooth',
+        'nfc' => 'comms_nfc',
+        'comms_nfc' => 'comms_nfc',
+        'usb' => 'comms_usb',
+        'comms_usb' => 'comms_usb',
+        'sensors' => 'features_sensors',
+        'features_sensors' => 'features_sensors',
+        'battery' => 'battery_type',
+        'battery_type' => 'battery_type',
+        'battery_capacity' => 'battery_capacity',
+        'charging' => 'battery_charging',
+        'battery_charging' => 'battery_charging',
+        'wireless_charging' => 'battery_wireless',
+        'battery_wireless' => 'battery_wireless',
+    ];
+
     public function import(Import $import): void
     {
         $handle = fopen(storage_path('app/private/' . $import->file_path), 'rb');
@@ -95,8 +170,7 @@ class DeviceImportService
             );
 
             $requestedSlug = trim((string) ($row['slug'] ?? '')) ?: Str::slug($brand->name . ' ' . $name);
-            $existingDevice = Device::where('slug', $requestedSlug)->first();
-            $device = $existingDevice;
+            $device = Device::where('slug', $requestedSlug)->first();
 
             if (!$device) {
                 $device = Device::create([
@@ -127,9 +201,7 @@ class DeviceImportService
                 [
                     'external_url' => $this->nullableString($row['source_url'] ?? null),
                     'last_seen_at' => now(),
-                    'metadata' => [
-                        'imported_file' => $dataSource->name,
-                    ],
+                    'metadata' => ['imported_file' => $dataSource->name],
                 ]
             );
 
@@ -139,22 +211,53 @@ class DeviceImportService
                     continue;
                 }
 
-                $specKey = Str::headline(Str::after($key, 'spec_'));
+                $rawKey = Str::snake(Str::after($key, 'spec_'));
+                $definitionKey = self::SPEC_MAP[$rawKey] ?? null;
+                $definition = $definitionKey
+                    ? SpecDefinition::where('key', $definitionKey)->where('active', true)->first()
+                    : null;
+                $specValue = trim((string) $value);
+
                 $spec = $device->specs()->create([
-                    'category' => $this->specCategory($specKey),
-                    'spec_key' => $specKey,
-                    'spec_value' => trim((string) $value),
+                    'spec_definition_id' => $definition?->id,
+                    'category' => $definition?->category ?? $this->specCategory($rawKey),
+                    'spec_key' => $definition?->label ?? Str::headline($rawKey),
+                    'spec_value' => $specValue,
+                    'numeric_value' => $definition && in_array($definition->value_type, ['integer', 'decimal'], true)
+                        ? $this->numericValue($specValue)
+                        : null,
+                    'boolean_value' => $definition && $definition->value_type === 'boolean'
+                        ? $this->booleanValue($specValue)
+                        : null,
                     'sort_order' => $sortOrder++,
                 ]);
 
                 $spec->sources()->create([
                     'data_source_id' => $dataSource->id,
-                    'source_value' => trim((string) $value),
+                    'source_value' => $specValue,
                     'source_url' => $this->nullableString($row['source_url'] ?? null),
                     'verification_status' => 'unverified',
                 ]);
             }
         });
+    }
+
+    private function numericValue(string $value): ?float
+    {
+        if (preg_match('/-?\d+(?:\.\d+)?/', str_replace(',', '', $value), $matches) !== 1) {
+            return null;
+        }
+
+        return (float) $matches[0];
+    }
+
+    private function booleanValue(string $value): ?bool
+    {
+        return match (Str::lower(trim($value))) {
+            'yes', 'true', '1', 'supported', 'present' => true,
+            'no', 'false', '0', 'not supported', 'absent' => false,
+            default => null,
+        };
     }
 
     private function combineRow(array $headers, array $values): array
@@ -227,16 +330,14 @@ class DeviceImportService
 
     private function specCategory(string $specKey): string
     {
-        $key = Str::lower($specKey);
-
         return match (true) {
-            Str::contains($key, ['screen', 'display', 'resolution']) => 'Display',
-            Str::contains($key, ['camera', 'selfie', 'video']) => 'Camera',
-            Str::contains($key, ['battery', 'charging']) => 'Battery',
-            Str::contains($key, ['ram', 'storage', 'memory', 'card slot']) => 'Memory',
-            Str::contains($key, ['chipset', 'cpu', 'gpu', 'os']) => 'Platform',
-            Str::contains($key, ['wifi', 'bluetooth', 'usb', 'nfc', 'network', 'sim']) => 'Connectivity',
-            default => 'General',
+            Str::contains($specKey, ['screen', 'display', 'resolution']) => 'Display',
+            Str::contains($specKey, ['camera', 'selfie', 'video']) => 'Main Camera',
+            Str::contains($specKey, ['battery', 'charging']) => 'Battery',
+            Str::contains($specKey, ['ram', 'storage', 'memory', 'card_slot']) => 'Memory',
+            Str::contains($specKey, ['chipset', 'cpu', 'gpu', 'os']) => 'Platform',
+            Str::contains($specKey, ['wifi', 'bluetooth', 'usb', 'nfc', 'network', 'sim']) => 'Comms',
+            default => 'Features',
         };
     }
 }
