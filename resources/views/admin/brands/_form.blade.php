@@ -69,10 +69,7 @@
 
                 <div class="col-12">
 
-                    <label
-                        for="brand_domain"
-                        class="form-label"
-                    >
+                    <label for="brand_domain" class="form-label">
                         Brand Domain
                     </label>
 
@@ -87,7 +84,7 @@
                     >
 
                     <div class="form-text">
-                        Brandfetch uses this domain to load the latest logo.
+                        This domain is used to load the official Brandfetch logo.
                     </div>
 
                     @error('brand_domain')
@@ -100,10 +97,7 @@
 
                 <div class="col-12">
 
-                    <label
-                        for="slug"
-                        class="form-label"
-                    >
+                    <label for="slug" class="form-label">
                         Slug
                     </label>
 
@@ -131,10 +125,7 @@
 
                 <div class="col-12">
 
-                    <label
-                        for="description"
-                        class="form-label"
-                    >
+                    <label for="description" class="form-label">
                         Description
                     </label>
 
@@ -160,14 +151,11 @@
 
     </div>
 
-
     <div class="col-lg-4">
 
         <div class="bg-white border p-4">
 
-            <h2 class="h5 mb-3">
-                Brand Logo
-            </h2>
+            <h2 class="h5 mb-3">Brand Logo</h2>
 
             <div
                 id="brandfetch-preview"
@@ -176,39 +164,30 @@
             >
 
                 @if($brand->brandfetch_logo_url ?? null)
-
                     <img
                         src="{{ $brand->brandfetch_logo_url }}"
                         alt="{{ $brand->name }}"
                         style="max-width:120px;max-height:120px;object-fit:contain;"
                     >
-
                 @elseif(isset($brand) && $brand->logo)
-
                     <img
                         src="{{ asset('storage/' . $brand->logo) }}"
                         alt="{{ $brand->name }}"
                         style="max-width:120px;max-height:120px;object-fit:contain;"
                     >
-
                 @else
-
                     <span class="text-muted small">
                         No logo selected
                     </span>
-
                 @endif
 
             </div>
 
             <div class="small text-muted mb-4">
-                Logos are loaded from Brandfetch and are not stored as local copies.
+                Brand logos are loaded directly from Brandfetch.
             </div>
 
-            <button
-                type="submit"
-                class="btn btn-dark"
-            >
+            <button type="submit" class="btn btn-dark">
                 {{ isset($brand) ? 'Update Brand' : 'Create Brand' }}
             </button>
 
@@ -225,11 +204,9 @@
 
 </div>
 
-
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-
     const searchButton = document.getElementById('brandfetch-search');
     const nameInput = document.getElementById('name');
     const domainInput = document.getElementById('brand_domain');
@@ -251,9 +228,45 @@ document.addEventListener('DOMContentLoaded', function () {
             .replace(/-+/g, '-');
     }
 
+    function logoUrl(domain) {
+        if (!domain) {
+            return null;
+        }
+
+        const normalized = domain
+            .replace(/^https?:\/\//i, '')
+            .replace(/^www\./i, '')
+            .replace(/\/+$/, '')
+            .trim()
+            .toLowerCase();
+
+        return 'https://cdn.brandfetch.io/domain/' +
+            encodeURIComponent(normalized) +
+            '?c={{ config('services.brandfetch.client_id') }}';
+    }
+
     function clearResults() {
         results.innerHTML = '';
         results.classList.add('d-none');
+    }
+
+    function showLogo(domain, name) {
+        const url = logoUrl(domain);
+
+        if (!preview || !url) {
+            return;
+        }
+
+        preview.innerHTML = '';
+
+        const image = document.createElement('img');
+        image.src = url;
+        image.alt = name || 'Brand logo';
+        image.style.maxWidth = '120px';
+        image.style.maxHeight = '120px';
+        image.style.objectFit = 'contain';
+
+        preview.appendChild(image);
     }
 
     function selectBrand(item) {
@@ -264,38 +277,22 @@ document.addEventListener('DOMContentLoaded', function () {
             slugInput.value = slugify(item.name || '');
         }
 
-        if (preview) {
-            if (item.icon) {
-                preview.innerHTML =
-                    '<img src="' + item.icon + '" alt="' +
-                    (item.name || '') +
-                    '" style="max-width:120px;max-height:120px;object-fit:contain;">';
-            } else {
-                preview.innerHTML =
-                    '<span class="text-muted small">Logo will load from Brandfetch after saving.</span>';
-            }
-        }
-
+        showLogo(item.domain, item.name);
         clearResults();
     }
 
     function renderResults(items) {
-
         results.innerHTML = '';
 
         if (!items.length) {
             results.innerHTML =
                 '<div class="p-3 text-muted small">No matching brands found.</div>';
-
             results.classList.remove('d-none');
-
             return;
         }
 
         items.forEach(function (item) {
-
             const button = document.createElement('button');
-
             button.type = 'button';
             button.className =
                 'w-100 border-0 border-bottom bg-white text-start p-3';
@@ -303,20 +300,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const wrapper = document.createElement('div');
             wrapper.className = 'd-flex align-items-center gap-3';
 
-            if (item.icon) {
-                const image = document.createElement('img');
+            const image = document.createElement('img');
+            image.src = item.logoUrl || logoUrl(item.domain) || '';
+            image.alt = '';
+            image.width = 40;
+            image.height = 40;
+            image.style.objectFit = 'contain';
 
-                image.src = item.icon;
-                image.alt = '';
-                image.width = 40;
-                image.height = 40;
-                image.style.objectFit = 'contain';
-
+            if (image.src) {
                 wrapper.appendChild(image);
             }
 
             const text = document.createElement('div');
-
             const title = document.createElement('div');
             title.className = 'fw-semibold';
             title.textContent = item.name || '';
@@ -341,7 +336,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     searchButton.addEventListener('click', async function () {
-
         const name = nameInput.value.trim();
 
         if (name.length < 2) {
@@ -353,10 +347,8 @@ document.addEventListener('DOMContentLoaded', function () {
         searchButton.textContent = 'Searching...';
 
         try {
-
             const response = await fetch(
-                '{{ route('admin.brands.search') }}?name=' +
-                encodeURIComponent(name),
+                '{{ route('admin.brands.search') }}?name=' + encodeURIComponent(name),
                 {
                     headers: {
                         'Accept': 'application/json'
@@ -367,31 +359,21 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(
-                    data.message || 'Brandfetch search failed.'
-                );
+                throw new Error(data.message || 'Brandfetch search failed.');
             }
 
             renderResults(data.results || []);
-
         } catch (error) {
-
             results.innerHTML =
                 '<div class="p-3 text-danger small">' +
                 error.message +
                 '</div>';
-
             results.classList.remove('d-none');
-
         } finally {
-
             searchButton.disabled = false;
             searchButton.textContent = 'Find Brand';
-
         }
-
     });
-
 });
 </script>
 @endpush
