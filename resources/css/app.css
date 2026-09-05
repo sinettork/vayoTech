@@ -204,6 +204,8 @@ body {
 
 .admin-header {
     flex-shrink: 0;
+    position: relative;
+    z-index: 10;
 }
 
 .admin-main {
@@ -247,6 +249,7 @@ body {
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
+    overscroll-behavior: contain;
     padding: 1.5rem;
 }
 
@@ -266,10 +269,16 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .02em;
+    white-space: nowrap;
 }
 
 .admin-content .table td {
     border-color: var(--phonespecs-border);
+}
+
+.admin-content .table-responsive {
+    scrollbar-width: thin;
+    overscroll-behavior-x: contain;
 }
 
 .admin-content .form-control,
@@ -284,25 +293,34 @@ body {
 }
 
 .admin-sidebar,
-.admin-content {
+.admin-content,
+.admin-content .table-responsive {
     scrollbar-width: thin;
     scrollbar-color: #ced4da transparent;
 }
 
 .admin-sidebar::-webkit-scrollbar,
-.admin-content::-webkit-scrollbar {
+.admin-content::-webkit-scrollbar,
+.admin-content .table-responsive::-webkit-scrollbar {
     width: 7px;
+    height: 7px;
 }
 
 .admin-sidebar::-webkit-scrollbar-track,
-.admin-content::-webkit-scrollbar-track {
+.admin-content::-webkit-scrollbar-track,
+.admin-content .table-responsive::-webkit-scrollbar-track {
     background: transparent;
 }
 
 .admin-sidebar::-webkit-scrollbar-thumb,
-.admin-content::-webkit-scrollbar-thumb {
+.admin-content::-webkit-scrollbar-thumb,
+.admin-content .table-responsive::-webkit-scrollbar-thumb {
     background: #ced4da;
     border-radius: 10px;
+}
+
+.admin-content .page-shell > * + * {
+    margin-top: 1rem;
 }
 
 @media (max-width: 767.98px) {
@@ -329,12 +347,61 @@ body {
         font-size: .875rem;
     }
 
+    .admin-body {
+        overflow: auto;
+    }
+
+    .admin-main {
+        display: block;
+        overflow: visible;
+    }
+
     .admin-sidebar {
-        width: 190px;
-        min-width: 190px;
+        width: 100%;
+        min-width: 0;
+        border-right: 0;
+        border-bottom: 1px solid var(--phonespecs-border);
+        overflow: visible;
+    }
+
+    .admin-sidebar .p-3 {
+        padding: .75rem !important;
+    }
+
+    .admin-sidebar .nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: .25rem;
+    }
+
+    .admin-sidebar .nav-link {
+        padding: .5rem .65rem;
+        border-left: 0;
+        border-bottom: 2px solid transparent;
+    }
+
+    .admin-sidebar .nav-link.active {
+        border-left: 0;
+        border-bottom-color: #0d6efd;
+    }
+
+    .admin-sidebar-footer {
+        display: none;
     }
 
     .admin-content {
+        overflow: visible;
         padding: 1rem;
+    }
+
+    .admin-content .table {
+        min-width: 760px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .admin-sidebar {
+        width: 205px;
+        min-width: 205px;
     }
 }
