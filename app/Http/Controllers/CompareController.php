@@ -34,10 +34,62 @@ class CompareController extends Controller
             }
         }
 
+        $compareRows = [];
+        foreach ($groupedKeys as $category => $keys) {
+            foreach (array_keys($keys) as $key) {
+                $values = [];
+                foreach ($devices as $device) {
+                    $match = $device->specs->first(
+                        fn ($spec) => $spec->category === $category && $spec->spec_key === $key
+                    );
+                    $values[] = $match?->spec_value;
+                }
+
+                $normalizedValues = collect($values)
+                    ->filter(fn ($value) => filled($value))
+                    ->map(fn ($value) => trim((string) $value))
+                    ->unique()
+                    ->values();
+
+                $compareRows[] = [
+                    'category' => $category,
+                    'key' => $key,
+                    'values' => $values,
+                    'has_difference' => $normalizedValues->count() > 1,
+                ];
+            }
+        }
+
         $allDevices = Device::with('brand')
             ->orderBy('name')
             ->get(['id', 'brand_id', 'name', 'slug', 'image', 'release_date', 'status']);
 
-        return view('compare.index', compact('devices', 'groupedKeys', 'allDevices'));
+        $compareSearchData = $allDevices->map(fn ($device) => [
+            'id' => $device->id,
+            'name' => $device->name,
+            'brand' => $device->brand?->name,
+            'url' => route('devices.show', $device),
+            'image' => $device->image ? asset('storage/' . $device->image) : null,
+        ])->values();
+
+        $quickSpecs = $devices->map(function ($device) {
+            $find = fn (string $key) => $device->specs
+                ->first(fn ($spec) => strcasecmp($spec->spec_key, $key) === 0)
+                ?->spec_value;
+
+            return [
+                'screen' => $find('Screen Size'),
+                'camera' => $find('Main Camera'),
+                'ram' => $find('RAM'),
+                'battery' => $find('Capacity'),
+            ];
+        })->values();
+
+        return view('compare.index', compact(
+            'devices',
+            'compareRows',
+            'compareSearchData',
+            'quickSpecs'
+        ));
     }
 }
