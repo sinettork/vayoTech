@@ -16,11 +16,19 @@
 
 <form method="GET" action="{{ route('admin.news.index') }}" class="mb-4">
     <div class="row g-2">
-        <div class="col-lg-10">
-            <input type="search" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search title or content...">
+        <div class="col-lg-8">
+            <input type="search" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search title, content, or slug...">
+        </div>
+        <div class="col-lg-2">
+            <select name="status" class="form-select">
+                <option value="">All statuses</option>
+                <option value="draft" @selected(request('status') === 'draft')>Draft</option>
+                <option value="scheduled" @selected(request('status') === 'scheduled')>Scheduled</option>
+                <option value="published" @selected(request('status') === 'published')>Published</option>
+            </select>
         </div>
         <div class="col-lg-2 d-grid">
-            <button type="submit" class="btn btn-outline-dark">Search</button>
+            <button type="submit" class="btn btn-outline-dark">Filter</button>
         </div>
     </div>
 </form>
