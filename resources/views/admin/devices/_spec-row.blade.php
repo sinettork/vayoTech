@@ -1,4 +1,4 @@
-<div class="border rounded p-3 mb-3 spec-row">
+<div class="border p-3 mb-3 spec-row">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <strong class="small">Specification</strong>
         <button type="button" class="btn btn-sm btn-outline-danger remove-spec">Remove</button>
