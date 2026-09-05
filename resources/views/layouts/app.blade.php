@@ -59,6 +59,9 @@
                             <a class="nav-link {{ request()->routeIs('devices.index') && request('status') === 'rumored' ? 'active' : '' }}" href="{{ route('devices.index', ['status' => 'rumored']) }}">Rumored</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('brands.*') ? 'active' : '' }}" href="{{ route('brands.index') }}">Explore brands</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('news.*') ? 'active' : '' }}" href="{{ route('news.index') }}">News</a>
                         </li>
                         <li class="nav-item">
