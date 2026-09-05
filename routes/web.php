@@ -52,6 +52,9 @@ Route::middleware(['auth', 'admin'])
 
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
+        Route::get('/brands/search', [AdminBrandController::class, 'search'])
+            ->name('brands.search');
+
         Route::resource('devices', AdminDeviceController::class)->except(['show']);
 
         Route::resource('brands', AdminBrandController::class)->except(['show']);
