@@ -14,94 +14,55 @@ use Illuminate\Support\Str;
 class DeviceImportService
 {
     private const SPEC_MAP = [
-        'network' => 'network_technology',
-        'network_technology' => 'network_technology',
-        'announced' => 'launch_announced',
-        'launch_announced' => 'launch_announced',
-        'launch_status' => 'launch_status',
-        'status' => 'launch_status',
-        'dimensions' => 'body_dimensions',
-        'body_dimensions' => 'body_dimensions',
-        'weight' => 'body_weight',
-        'body_weight' => 'body_weight',
-        'build' => 'body_build',
-        'body_build' => 'body_build',
-        'ip_rating' => 'body_ip_rating',
-        'water_and_dust_resistance' => 'body_ip_rating',
+        'network' => 'network_technology', 'network_technology' => 'network_technology',
+        'announced' => 'launch_announced', 'launch_announced' => 'launch_announced',
+        'launch_status' => 'launch_status', 'status' => 'launch_status',
+        'dimensions' => 'body_dimensions', 'body_dimensions' => 'body_dimensions',
+        'weight' => 'body_weight', 'body_weight' => 'body_weight',
+        'build' => 'body_build', 'body_build' => 'body_build',
+        'ip_rating' => 'body_ip_rating', 'water_and_dust_resistance' => 'body_ip_rating',
         'headphone_jack' => 'body_headphone_jack',
-        'display' => 'display_type',
-        'display_type' => 'display_type',
-        'screen_size' => 'display_size',
-        'display_size' => 'display_size',
-        'resolution' => 'display_resolution',
-        'display_resolution' => 'display_resolution',
-        'refresh_rate' => 'display_refresh_rate',
-        'display_refresh_rate' => 'display_refresh_rate',
-        'brightness' => 'display_brightness',
-        'display_brightness' => 'display_brightness',
-        'hdr' => 'display_hdr',
-        'display_hdr' => 'display_hdr',
-        'os' => 'platform_os',
-        'platform_os' => 'platform_os',
-        'chipset' => 'platform_chipset',
-        'platform_chipset' => 'platform_chipset',
-        'cpu' => 'platform_cpu',
-        'platform_cpu' => 'platform_cpu',
-        'gpu' => 'platform_gpu',
-        'platform_gpu' => 'platform_gpu',
-        'ram' => 'memory_ram',
-        'memory_ram' => 'memory_ram',
-        'storage' => 'memory_storage',
-        'internal_storage' => 'memory_storage',
-        'memory_storage' => 'memory_storage',
-        'storage_type' => 'memory_storage_type',
-        'memory_storage_type' => 'memory_storage_type',
-        'card_slot' => 'memory_card_slot',
-        'memory_card_slot' => 'memory_card_slot',
-        'main_camera' => 'main_camera_setup',
-        'main_camera_setup' => 'main_camera_setup',
+        'display' => 'display_type', 'display_type' => 'display_type',
+        'screen_size' => 'display_size', 'display_size' => 'display_size',
+        'resolution' => 'display_resolution', 'display_resolution' => 'display_resolution',
+        'refresh_rate' => 'display_refresh_rate', 'display_refresh_rate' => 'display_refresh_rate',
+        'brightness' => 'display_brightness', 'display_brightness' => 'display_brightness',
+        'hdr' => 'display_hdr', 'display_hdr' => 'display_hdr',
+        'os' => 'platform_os', 'platform_os' => 'platform_os',
+        'chipset' => 'platform_chipset', 'platform_chipset' => 'platform_chipset',
+        'cpu' => 'platform_cpu', 'platform_cpu' => 'platform_cpu',
+        'gpu' => 'platform_gpu', 'platform_gpu' => 'platform_gpu',
+        'ram' => 'memory_ram', 'memory_ram' => 'memory_ram',
+        'storage' => 'memory_storage', 'internal_storage' => 'memory_storage', 'memory_storage' => 'memory_storage',
+        'storage_type' => 'memory_storage_type', 'memory_storage_type' => 'memory_storage_type',
+        'card_slot' => 'memory_card_slot', 'memory_card_slot' => 'memory_card_slot',
+        'main_camera' => 'main_camera_setup', 'main_camera_setup' => 'main_camera_setup',
         'main_camera_video' => 'main_camera_video',
-        'selfie_camera' => 'selfie_camera_setup',
-        'selfie_camera_setup' => 'selfie_camera_setup',
+        'selfie_camera' => 'selfie_camera_setup', 'selfie_camera_setup' => 'selfie_camera_setup',
         'selfie_camera_video' => 'selfie_camera_video',
-        'loudspeaker' => 'sound_loudspeaker',
-        'sound_loudspeaker' => 'sound_loudspeaker',
-        'headphone_out' => 'sound_headphone_out',
-        'sound_headphone_out' => 'sound_headphone_out',
-        'wifi' => 'comms_wifi',
-        'comms_wifi' => 'comms_wifi',
-        'bluetooth' => 'comms_bluetooth',
-        'comms_bluetooth' => 'comms_bluetooth',
-        'nfc' => 'comms_nfc',
-        'comms_nfc' => 'comms_nfc',
-        'usb' => 'comms_usb',
-        'comms_usb' => 'comms_usb',
-        'sensors' => 'features_sensors',
-        'features_sensors' => 'features_sensors',
-        'battery' => 'battery_type',
-        'battery_type' => 'battery_type',
+        'loudspeaker' => 'sound_loudspeaker', 'sound_loudspeaker' => 'sound_loudspeaker',
+        'headphone_out' => 'sound_headphone_out', 'sound_headphone_out' => 'sound_headphone_out',
+        'wifi' => 'comms_wifi', 'comms_wifi' => 'comms_wifi',
+        'bluetooth' => 'comms_bluetooth', 'comms_bluetooth' => 'comms_bluetooth',
+        'nfc' => 'comms_nfc', 'comms_nfc' => 'comms_nfc',
+        'usb' => 'comms_usb', 'comms_usb' => 'comms_usb',
+        'sensors' => 'features_sensors', 'features_sensors' => 'features_sensors',
+        'battery' => 'battery_type', 'battery_type' => 'battery_type',
         'battery_capacity' => 'battery_capacity',
-        'charging' => 'battery_charging',
-        'battery_charging' => 'battery_charging',
-        'wireless_charging' => 'battery_wireless',
-        'battery_wireless' => 'battery_wireless',
+        'charging' => 'battery_charging', 'battery_charging' => 'battery_charging',
+        'wireless_charging' => 'battery_wireless', 'battery_wireless' => 'battery_wireless',
     ];
 
     public function import(Import $import): void
     {
         $handle = fopen(storage_path('app/private/' . $import->file_path), 'rb');
-
         if ($handle === false) {
             throw new \RuntimeException('The import file could not be opened.');
         }
 
         $dataSource = DataSource::firstOrCreate(
             ['name' => 'CSV import: ' . $import->file_name],
-            [
-                'type' => 'csv',
-                'trust_level' => 3,
-                'active' => true,
-            ]
+            ['type' => 'csv', 'trust_level' => 3, 'active' => true]
         );
 
         try {
@@ -137,10 +98,7 @@ class DeviceImportService
                     ]);
                 }
 
-                $import->update([
-                    'processed_rows' => $processed,
-                    'successful_rows' => $successful,
-                ]);
+                $import->update(['processed_rows' => $processed, 'successful_rows' => $successful]);
             }
 
             $import->update(['completed_at' => now()]);
@@ -153,7 +111,6 @@ class DeviceImportService
     {
         $brandName = trim((string) ($row['brand'] ?? ''));
         $name = trim((string) ($row['name'] ?? ''));
-
         if ($brandName === '' || $name === '') {
             throw new \InvalidArgumentException('Both brand and name are required.');
         }
@@ -164,11 +121,7 @@ class DeviceImportService
         }
 
         DB::transaction(function () use ($row, $brandName, $name, $status, $dataSource): void {
-            $brand = Brand::firstOrCreate(
-                ['slug' => Str::slug($brandName)],
-                ['name' => $brandName]
-            );
-
+            $brand = Brand::firstOrCreate(['slug' => Str::slug($brandName)], ['name' => $brandName]);
             $requestedSlug = trim((string) ($row['slug'] ?? '')) ?: Str::slug($brand->name . ' ' . $name);
             $device = Device::where('slug', $requestedSlug)->first();
 
@@ -194,10 +147,7 @@ class DeviceImportService
             }
 
             $device->dataSourceLinks()->updateOrCreate(
-                [
-                    'data_source_id' => $dataSource->id,
-                    'external_id' => $requestedSlug !== '' ? $requestedSlug : $device->slug,
-                ],
+                ['data_source_id' => $dataSource->id, 'external_id' => $requestedSlug !== '' ? $requestedSlug : $device->slug],
                 [
                     'external_url' => $this->nullableString($row['source_url'] ?? null),
                     'last_seen_at' => now(),
@@ -224,11 +174,9 @@ class DeviceImportService
                     'spec_key' => $definition?->label ?? Str::headline($rawKey),
                     'spec_value' => $specValue,
                     'numeric_value' => $definition && in_array($definition->value_type, ['integer', 'decimal'], true)
-                        ? $this->numericValue($specValue)
-                        : null,
+                        ? $this->numericValue($specValue) : null,
                     'boolean_value' => $definition && $definition->value_type === 'boolean'
-                        ? $this->booleanValue($specValue)
-                        : null,
+                        ? $this->booleanValue($specValue) : null,
                     'sort_order' => $sortOrder++,
                 ]);
 
@@ -247,7 +195,6 @@ class DeviceImportService
         if (preg_match('/-?\d+(?:\.\d+)?/', str_replace(',', '', $value), $matches) !== 1) {
             return null;
         }
-
         return (float) $matches[0];
     }
 
@@ -264,12 +211,10 @@ class DeviceImportService
     {
         $row = [];
         foreach ($headers as $index => $header) {
-            if ($header === '') {
-                continue;
+            if ($header !== '') {
+                $row[$header] = trim((string) ($values[$index] ?? ''));
             }
-            $row[$header] = trim((string) ($values[$index] ?? ''));
         }
-
         return $row;
     }
 
@@ -279,7 +224,6 @@ class DeviceImportService
         while (fgetcsv($handle) !== false) {
             $count++;
         }
-
         return $count;
     }
 
@@ -290,7 +234,6 @@ class DeviceImportService
                 return false;
             }
         }
-
         return true;
     }
 
@@ -299,11 +242,9 @@ class DeviceImportService
         $slug = $base ?: 'device';
         $candidate = $slug;
         $counter = 2;
-
         while (Device::where('slug', $candidate)->exists()) {
             $candidate = $slug . '-' . $counter++;
         }
-
         return $candidate;
     }
 
@@ -313,12 +254,10 @@ class DeviceImportService
         if ($value === '') {
             return null;
         }
-
         $date = date_create($value);
         if (!$date) {
             throw new \InvalidArgumentException("Invalid release date: {$value}");
         }
-
         return $date->format('Y-m-d');
     }
 
@@ -332,7 +271,8 @@ class DeviceImportService
     {
         return match (true) {
             Str::contains($specKey, ['screen', 'display', 'resolution']) => 'Display',
-            Str::contains($specKey, ['camera', 'selfie', 'video']) => 'Main Camera',
+            Str::contains($specKey, ['selfie']) => 'Selfie Camera',
+            Str::contains($specKey, ['camera', 'video']) => 'Main Camera',
             Str::contains($specKey, ['battery', 'charging']) => 'Battery',
             Str::contains($specKey, ['ram', 'storage', 'memory', 'card_slot']) => 'Memory',
             Str::contains($specKey, ['chipset', 'cpu', 'gpu', 'os']) => 'Platform',
