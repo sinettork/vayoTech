@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -12,7 +14,7 @@ class Device extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
-    protected $fillable = ['brand_id', 'name', 'slug', 'release_date', 'image', 'status'];
+    protected $fillable = ['brand_id', 'name', 'slug', 'release_date', 'image', 'status', 'verification_status'];
 
     protected function casts(): array
     {
@@ -26,7 +28,7 @@ class Device extends Model implements HasMedia
         return $this->belongsTo(Brand::class);
     }
 
-    public function specs()
+    public function specs(): HasMany
     {
         return $this->hasMany(DeviceSpec::class);
     }
@@ -34,6 +36,18 @@ class Device extends Model implements HasMedia
     public function groupedSpecs()
     {
         return $this->specs()->orderBy('sort_order')->get()->groupBy('category');
+    }
+
+    public function dataSourceLinks(): HasMany
+    {
+        return $this->hasMany(DeviceDataSource::class);
+    }
+
+    public function dataSources(): BelongsToMany
+    {
+        return $this->belongsToMany(DataSource::class, 'device_data_sources')
+            ->withPivot(['external_id', 'external_url', 'last_seen_at', 'metadata'])
+            ->withTimestamps();
     }
 
     public function registerMediaConversions(?Media $media = null): void
