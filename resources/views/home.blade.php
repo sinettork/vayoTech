@@ -23,7 +23,7 @@
                                     width="28"
                                     height="28"
                                     loading="lazy"
-                                    style="object-fit:contain;background:#fff;"
+                                    style="object-fit:contain;background:transparent;border:0;"
                                 >
                             @elseif($brand->logo)
                                 <img
@@ -32,7 +32,7 @@
                                     width="28"
                                     height="28"
                                     loading="lazy"
-                                    style="object-fit:contain;background:#fff;"
+                                    style="object-fit:contain;background:transparent;border:0;"
                                 >
                             @endif
                             <span>{{ $brand->name }}</span>
