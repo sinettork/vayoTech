@@ -27,6 +27,8 @@
 
 @section('content')
 
+<div id="top"></div>
+
 <div class="mb-3 small">
     <a
         href="{{ route('devices.index') }}"
@@ -274,7 +276,5 @@
     </div>
 
 @endif
-
-<a id="top"></a>
 
 @endsection
