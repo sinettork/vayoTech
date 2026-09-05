@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DeviceController as AdminDeviceController;
+use App\Http\Controllers\Admin\ImportController as AdminImportController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CompareController;
@@ -35,7 +36,6 @@ Route::view('/privacy', 'legal.privacy')->name('privacy');
 
 Route::view('/terms', 'legal.terms')->name('terms');
 
-
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])
     ->middleware('guest')
     ->name('admin.login');
@@ -43,7 +43,6 @@ Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])
 Route::post('/admin/login', [AdminAuthController::class, 'login'])
     ->middleware('guest')
     ->name('admin.login.submit');
-
 
 Route::middleware(['auth', 'admin'])
     ->prefix('admin')
@@ -61,4 +60,7 @@ Route::middleware(['auth', 'admin'])
         Route::resource('brands', AdminBrandController::class)->except(['show']);
 
         Route::resource('news', AdminNewsController::class)->except(['show']);
+
+        Route::get('/imports', [AdminImportController::class, 'index'])->name('imports.index');
+        Route::post('/imports', [AdminImportController::class, 'store'])->name('imports.store');
     });
