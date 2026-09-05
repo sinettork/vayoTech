@@ -23,18 +23,33 @@ class AuthController extends Controller
             'remember' => ['nullable', 'boolean'],
         ]);
 
-        if (Auth::attempt(
-            ['email' => $credentials['email'], 'password' => $credentials['password']],
+        if (!Auth::attempt(
+            [
+                'email' => $credentials['email'],
+                'password' => $credentials['password'],
+            ],
             (bool) ($credentials['remember'] ?? false)
         )) {
-            $request->session()->regenerate();
-
-            return redirect()->intended(route('admin.dashboard'));
+            return back()
+                ->withErrors([
+                    'email' => 'The provided credentials are incorrect.',
+                ])
+                ->onlyInput('email');
         }
 
-        return back()
-            ->withErrors(['email' => 'The provided credentials are incorrect.'])
-            ->onlyInput('email');
+        if (!Auth::user()->is_admin) {
+            Auth::logout();
+
+            return back()
+                ->withErrors([
+                    'email' => 'You do not have permission to access the admin panel.',
+                ])
+                ->onlyInput('email');
+        }
+
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     public function logout(Request $request): RedirectResponse
