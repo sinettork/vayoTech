@@ -44,7 +44,7 @@ Route::post('/admin/login', [AdminAuthController::class, 'login'])
     ->name('admin.login.submit');
 
 
-Route::middleware('auth')
+Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function (): void {
