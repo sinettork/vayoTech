@@ -215,6 +215,15 @@ body {
     overflow: hidden;
 }
 
+.admin-main-shell {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+}
+
 .admin-sidebar {
     width: 230px;
     min-width: 230px;
@@ -253,10 +262,8 @@ body {
     padding: 1.5rem;
 }
 
-.admin-content > .page-shell {
+.admin-content-inner {
     width: 100%;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .admin-sidebar-footer {
@@ -325,7 +332,7 @@ body {
     border-radius: 10px;
 }
 
-.admin-content .page-shell > * + * {
+.admin-content-inner > * + * {
     margin-top: 1rem;
 }
 
@@ -358,6 +365,12 @@ body {
     }
 
     .admin-main {
+        display: block;
+        overflow: visible;
+    }
+
+    .admin-main-shell {
+        max-width: 100%;
         display: block;
         overflow: visible;
     }
