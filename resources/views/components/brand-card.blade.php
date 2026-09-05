@@ -59,18 +59,20 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
+            background: transparent;
+            border: 0;
             color: #212529;
             font-size: 1.1rem;
             font-weight: 700;
         }
 
         .brand-card-logo img {
+            display: block;
             width: 100%;
             height: 100%;
-            padding: 7px;
+            padding: 4px;
             object-fit: contain;
+            background: transparent;
         }
 
         .brand-card-content {
