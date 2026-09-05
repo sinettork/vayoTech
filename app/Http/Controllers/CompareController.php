@@ -14,13 +14,18 @@ class CompareController extends Controller
             ->filter(fn (string $id): bool => ctype_digit($id))
             ->map(fn (string $id): int => (int) $id)
             ->unique()
-            ->take(4)
-            ->values()
-            ->all();
+            ->take(3)
+            ->values();
 
-        $devices = Device::with(['brand', 'specs'])
+        $devicesById = Device::with(['brand', 'specs'])
             ->whereIn('id', $deviceIds)
-            ->get();
+            ->get()
+            ->keyBy('id');
+
+        $devices = $deviceIds
+            ->map(fn (int $id) => $devicesById->get($id))
+            ->filter()
+            ->values();
 
         $groupedKeys = [];
         foreach ($devices as $device) {
@@ -29,7 +34,9 @@ class CompareController extends Controller
             }
         }
 
-        $allDevices = Device::with('brand')->orderBy('name')->get();
+        $allDevices = Device::with('brand')
+            ->orderBy('name')
+            ->get(['id', 'brand_id', 'name', 'slug', 'image', 'release_date', 'status']);
 
         return view('compare.index', compact('devices', 'groupedKeys', 'allDevices'));
     }
