@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'PhoneSpecs')</title>
+    <title>@yield('title', 'VayoTech')</title>
     @hasSection('meta_description')
         <meta name="description" content="@yield('meta_description')">
     @else
-        <meta name="description" content="@yield('description', 'Compare phone specs, browse the latest devices, and read tech news on PhoneSpecs.')">
+        <meta name="description" content="@yield('description', 'Compare phone specs, browse the latest devices, and read tech news on VayoTech.')">
     @endif
 
     {{-- Open Graph (for social sharing previews) --}}
-    <meta property="og:site_name" content="PhoneSpecs">
-    <meta property="og:title" content="@yield('og_title', 'PhoneSpecs')">
+    <meta property="og:site_name" content="VayoTech">
+    <meta property="og:title" content="@yield('og_title', 'VayoTech')">
     @hasSection('og_description')
         <meta property="og:description" content="@yield('og_description')">
     @elseif (View::hasSection('meta_description'))
         <meta property="og:description" content="@yield('meta_description')">
     @else
-        <meta property="og:description" content="@yield('description', 'Compare phone specs and read the latest tech news.')">
+        <meta property="og:description" content="@yield('description', 'Compare phone specs and read the latest tech news on VayoTech.')">
     @endif
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -36,13 +36,14 @@
     @yield('schema')
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 <body>
 
     <header class="site-header">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container page-shell">
-                <a class="navbar-brand" href="{{ route('home') }}">PhoneSpecs</a>
+                <a class="navbar-brand" href="{{ route('home') }}">VayoTech</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navigation" aria-controls="main-navigation" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -79,11 +80,11 @@
     </main>
 
     <footer class="bg-light text-center py-3 mt-5">
-        <p class="mb-0">&copy; {{ date('Y') }} PhoneSpecs. <a href="{{ route('privacy') }}">Privacy</a> &middot; <a href="{{ route('terms') }}">Terms</a></p>
+        <p class="mb-0">&copy; {{ date('Y') }} VayoTech. <a href="{{ route('privacy') }}">Privacy</a> &middot; <a href="{{ route('terms') }}">Terms</a></p>
     </footer>
     <div id="cookie-banner" class="alert alert-dark rounded-0 fixed-bottom mb-0 d-none" role="dialog" aria-label="Cookie notice">
         <div class="container d-flex flex-column flex-md-row align-items-md-center gap-2 justify-content-between">
-            <span>We use essential cookies to keep PhoneSpecs working. Read our <a class="alert-link" href="{{ route('privacy') }}">Privacy Policy</a>.</span>
+            <span>We use essential cookies to keep VayoTech working. Read our <a class="alert-link" href="{{ route('privacy') }}">Privacy Policy</a>.</span>
             <button id="accept-cookies" type="button" class="btn btn-sm btn-light">Accept</button>
         </div>
     </div>
@@ -126,10 +127,9 @@ searchBox.addEventListener('input', function () {
 
                 resultsBox.style.display = 'block';
             });
-    }, 300); // debounce: wait 300ms after typing stops before searching
+    }, 300);
 });
 
-// Hide results when clicking outside the search box
 document.addEventListener('click', function (e) {
     if (!searchBox.contains(e.target) && !resultsBox.contains(e.target)) {
         resultsBox.style.display = 'none';
