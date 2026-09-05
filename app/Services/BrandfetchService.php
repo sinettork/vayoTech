@@ -35,15 +35,18 @@ class BrandfetchService
 
         return 'https://cdn.brandfetch.io/domain/'
             . rawurlencode($this->normalizeDomain($domain))
-            . '?c=' . rawurlencode($clientId)
-            . '&type=' . rawurlencode($type);
+            . '/h/128/w/128/'
+            . rawurlencode($type)
+            . '.png?c='
+            . rawurlencode($clientId)
+            . '&fallback=transparent';
     }
 
     public function normalizeDomain(string $domain): string
     {
         $domain = trim($domain);
         $domain = preg_replace('#^https?://#i', '', $domain);
-        $domain = preg_replace('#^www\.?#i', '', $domain);
+        $domain = preg_replace('#^www\.#i', '', $domain);
         $domain = trim($domain, '/');
 
         return strtolower($domain);
