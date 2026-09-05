@@ -45,7 +45,8 @@ class Brand extends Model
 
         return 'https://cdn.brandfetch.io/domain/'
             . rawurlencode(strtolower($domain))
-            . '/w/96/h/96?c='
-            . rawurlencode($clientId);
+            . '/h/128/w/128/icon.png?c='
+            . rawurlencode($clientId)
+            . '&fallback=lettermark';
     }
 }
