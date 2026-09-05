@@ -32,7 +32,7 @@ class NewsController extends Controller
         if ($request->filled('status')) {
             match ($request->string('status')->toString()) {
                 'draft' => $query->whereNull('published_at'),
-                'scheduled' => $query->where('published_at', '>', now()),
+                'scheduled' => $query->whereNotNull('published_at')->where('published_at', '>', now()),
                 'published' => $query->whereNotNull('published_at')->where('published_at', '<=', now()),
                 default => null,
             };
@@ -51,7 +51,6 @@ class NewsController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validatePost($request);
-
         $data['slug'] = $data['slug'] ?: $this->uniqueSlug($data['title']);
 
         if ($request->hasFile('image')) {
@@ -60,21 +59,17 @@ class NewsController extends Controller
 
         NewsPost::create($data);
 
-        return redirect()->route('admin.news.index')
-            ->with('success', 'News post created successfully.');
+        return redirect()->route('admin.news.index')->with('success', 'News post created successfully.');
     }
 
     public function edit(NewsPost $news): View
     {
-        return view('admin.news.edit', [
-            'newsPost' => $news,
-        ]);
+        return view('admin.news.edit', ['newsPost' => $news]);
     }
 
     public function update(Request $request, NewsPost $news): RedirectResponse
     {
         $data = $this->validatePost($request, $news->id);
-
         $data['slug'] = $data['slug'] ?: $news->slug;
 
         if ($request->hasFile('image')) {
@@ -87,8 +82,7 @@ class NewsController extends Controller
 
         $news->update($data);
 
-        return redirect()->route('admin.news.index')
-            ->with('success', 'News post updated successfully.');
+        return redirect()->route('admin.news.index')->with('success', 'News post updated successfully.');
     }
 
     public function destroy(NewsPost $news): RedirectResponse
@@ -99,8 +93,7 @@ class NewsController extends Controller
 
         $news->delete();
 
-        return redirect()->route('admin.news.index')
-            ->with('success', 'News post deleted successfully.');
+        return redirect()->route('admin.news.index')->with('success', 'News post deleted successfully.');
     }
 
     private function validatePost(Request $request, ?int $postId = null): array
