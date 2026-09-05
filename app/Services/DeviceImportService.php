@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Brand;
+use App\Models\DataSource;
 use App\Models\Device;
 use App\Models\FailedImportRow;
 use App\Models\Import;
@@ -11,15 +12,6 @@ use Illuminate\Support\Str;
 
 class DeviceImportService
 {
-    private const DEVICE_COLUMNS = [
-        'brand',
-        'name',
-        'slug',
-        'release_date',
-        'status',
-        'image',
-    ];
-
     public function import(Import $import): void
     {
         $handle = fopen(storage_path('app/private/' . $import->file_path), 'rb');
@@ -27,6 +19,15 @@ class DeviceImportService
         if ($handle === false) {
             throw new \RuntimeException('The import file could not be opened.');
         }
+
+        $dataSource = DataSource::firstOrCreate(
+            ['name' => 'CSV import: ' . $import->file_name],
+            [
+                'type' => 'csv',
+                'trust_level' => 3,
+                'active' => true,
+            ]
+        );
 
         try {
             $headers = fgetcsv($handle);
@@ -43,11 +44,15 @@ class DeviceImportService
             $successful = 0;
 
             while (($values = fgetcsv($handle)) !== false) {
+                if ($this->rowIsEmpty($values)) {
+                    continue;
+                }
+
                 $processed++;
                 $row = $this->combineRow($headers, $values);
 
                 try {
-                    $this->importRow($row);
+                    $this->importRow($row, $dataSource);
                     $successful++;
                 } catch (\Throwable $e) {
                     FailedImportRow::create([
@@ -69,7 +74,7 @@ class DeviceImportService
         }
     }
 
-    private function importRow(array $row): void
+    private function importRow(array $row, DataSource $dataSource): void
     {
         $brandName = trim((string) ($row['brand'] ?? ''));
         $name = trim((string) ($row['name'] ?? ''));
@@ -83,23 +88,25 @@ class DeviceImportService
             throw new \InvalidArgumentException('Status must be rumored, available, or discontinued.');
         }
 
-        $device = DB::transaction(function () use ($row, $brandName, $name, $status): Device {
+        DB::transaction(function () use ($row, $brandName, $name, $status, $dataSource): void {
             $brand = Brand::firstOrCreate(
                 ['slug' => Str::slug($brandName)],
                 ['name' => $brandName]
             );
 
-            $slug = trim((string) ($row['slug'] ?? '')) ?: Str::slug($brand->name . ' ' . $name);
-            $device = Device::where('slug', $slug)->first();
+            $requestedSlug = trim((string) ($row['slug'] ?? '')) ?: Str::slug($brand->name . ' ' . $name);
+            $existingDevice = Device::where('slug', $requestedSlug)->first();
+            $device = $existingDevice;
 
             if (!$device) {
                 $device = Device::create([
                     'brand_id' => $brand->id,
                     'name' => $name,
-                    'slug' => $this->uniqueSlug($slug),
+                    'slug' => $this->uniqueSlug($requestedSlug),
                     'release_date' => $this->nullableDate($row['release_date'] ?? null),
                     'status' => $status,
                     'image' => $this->nullableString($row['image'] ?? null),
+                    'verification_status' => 'unverified',
                 ]);
             } else {
                 $device->update([
@@ -112,6 +119,20 @@ class DeviceImportService
                 $device->specs()->delete();
             }
 
+            $device->dataSourceLinks()->updateOrCreate(
+                [
+                    'data_source_id' => $dataSource->id,
+                    'external_id' => $requestedSlug !== '' ? $requestedSlug : $device->slug,
+                ],
+                [
+                    'external_url' => $this->nullableString($row['source_url'] ?? null),
+                    'last_seen_at' => now(),
+                    'metadata' => [
+                        'imported_file' => $dataSource->name,
+                    ],
+                ]
+            );
+
             $sortOrder = 1;
             foreach ($row as $key => $value) {
                 if (!Str::startsWith($key, 'spec_') || trim((string) $value) === '') {
@@ -119,15 +140,20 @@ class DeviceImportService
                 }
 
                 $specKey = Str::headline(Str::after($key, 'spec_'));
-                $device->specs()->create([
+                $spec = $device->specs()->create([
                     'category' => $this->specCategory($specKey),
                     'spec_key' => $specKey,
                     'spec_value' => trim((string) $value),
                     'sort_order' => $sortOrder++,
                 ]);
-            }
 
-            return $device;
+                $spec->sources()->create([
+                    'data_source_id' => $dataSource->id,
+                    'source_value' => trim((string) $value),
+                    'source_url' => $this->nullableString($row['source_url'] ?? null),
+                    'verification_status' => 'unverified',
+                ]);
+            }
         });
     }
 
@@ -152,6 +178,17 @@ class DeviceImportService
         }
 
         return $count;
+    }
+
+    private function rowIsEmpty(array $row): bool
+    {
+        foreach ($row as $value) {
+            if (trim((string) $value) !== '') {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function uniqueSlug(string $base): string
