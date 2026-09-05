@@ -7,7 +7,7 @@
 <div class="compare-page">
     <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
         <div>
-            <span class="text-primary small fw-semibold text-uppercase">Phone comparison</span>
+            <span class="text-primary small fw-semibold">Phone comparison</span>
             <h1 class="h2 mb-1">Compare specs</h1>
             <p class="text-muted mb-0">Search and compare up to three phones side by side.</p>
         </div>
@@ -22,7 +22,7 @@
                         <label class="compare-search-label" for="compare-search-{{ $slot }}">Compare with</label>
                         <div class="position-relative">
                             <svg class="compare-search-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="m21 21-4.35-4.35m1.35-5.15a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="m21 21-4.35-4.35m1.35-5.15a6.5 6.5 0 1 1-13 0Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                             </svg>
                             <input
                                 id="compare-search-{{ $slot }}"
@@ -58,7 +58,7 @@
                             </div>
 
                             <div class="compare-device-copy">
-                                <div class="small text-muted text-uppercase fw-semibold">{{ $devices->get($slot)->brand->name }}</div>
+                                <div class="small text-muted fw-semibold">{{ $devices->get($slot)->brand->name }}</div>
                                 <h2 class="compare-device-name">{{ $devices->get($slot)->name }}</h2>
                                 <div class="d-flex align-items-center gap-2 flex-wrap">
                                     @if ($devices->get($slot)->release_date)
@@ -121,7 +121,7 @@
         <section class="compare-table-panel" aria-label="Detailed specifications comparison">
             <div class="compare-table-heading">
                 <div>
-                    <span class="text-primary small fw-semibold text-uppercase">Side by side</span>
+                    <span class="text-primary small fw-semibold">Side by side</span>
                     <h2 class="h4 mb-1">Detailed specifications</h2>
                 </div>
                 <span class="text-muted small">{{ $devices->count() }} devices selected</span>
