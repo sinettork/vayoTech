@@ -16,10 +16,10 @@
 
 <form method="GET" action="{{ route('admin.news.index') }}" class="mb-4">
     <div class="row g-2">
-        <div class="col-lg-8">
+        <div class="col-lg-7">
             <input type="search" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search title, content, or slug...">
         </div>
-        <div class="col-lg-2">
+        <div class="col-lg-3">
             <select name="status" class="form-select">
                 <option value="">All statuses</option>
                 <option value="draft" @selected(request('status') === 'draft')>Draft</option>
@@ -27,8 +27,11 @@
                 <option value="published" @selected(request('status') === 'published')>Published</option>
             </select>
         </div>
-        <div class="col-lg-2 d-grid">
-            <button type="submit" class="btn btn-outline-dark">Filter</button>
+        <div class="col-lg-2 d-flex gap-2">
+            <button type="submit" class="btn btn-outline-dark flex-fill">Filter</button>
+            @if(request()->filled('search') || request()->filled('status'))
+                <a href="{{ route('admin.news.index') }}" class="btn btn-outline-secondary">Reset</a>
+            @endif
         </div>
     </div>
 </form>
@@ -65,7 +68,15 @@
                 <td class="small">
                     {{ $post->published_at?->format('M d, Y H:i') ?? 'Not published' }}
                 </td>
-                <td>{{ $status }}</td>
+                <td>
+                    @if($status === 'Draft')
+                        <span class="badge text-bg-secondary">Draft</span>
+                    @elseif($status === 'Scheduled')
+                        <span class="badge text-bg-warning">Scheduled</span>
+                    @else
+                        <span class="badge text-bg-success">Published</span>
+                    @endif
+                </td>
                 <td class="text-end text-nowrap">
                     @if($post->published_at && $post->published_at->isPast())
                         <a href="{{ route('news.show', $post->slug) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">View</a>
