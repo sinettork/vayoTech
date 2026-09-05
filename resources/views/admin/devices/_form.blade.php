@@ -1,11 +1,30 @@
 @csrf
 
+<datalist id="spec-category-options">
+    <option value="General">
+    <option value="Network">
+    <option value="Launch">
+    <option value="Body">
+    <option value="Display">
+    <option value="Platform">
+    <option value="Memory">
+    <option value="Main Camera">
+    <option value="Front Camera">
+    <option value="Sound">
+    <option value="Connectivity">
+    <option value="Features">
+    <option value="Battery">
+    <option value="Charging">
+    <option value="Performance">
+    <option value="Software">
+</datalist>
+
 <div class="row g-4">
     <div class="col-lg-8">
         <div class="bg-white border p-4 mb-4">
             <div class="mb-4">
                 <h2 class="h5 mb-1">Device Information</h2>
-                <p class="text-muted small mb-0">Set the basic model details and publication status.</p>
+                <p class="text-muted small mb-0">Set the model identity, release information, status, and main image.</p>
             </div>
 
             <div class="row g-3">
@@ -29,12 +48,13 @@
                             <option value="{{ $value }}" @selected(old('status', $device->status ?? 'available') === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
+                    <div class="form-text">Available = public catalog, Rumored = upcoming, Discontinued = legacy.</div>
                     @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="col-md-8">
                     <label for="name" class="form-label">Device Name</label>
-                    <input type="text" name="name" id="name" value="{{ old('name', $device->name ?? '') }}" class="form-control @error('name') is-invalid @enderror" required maxlength="255">
+                    <input type="text" name="name" id="name" value="{{ old('name', $device->name ?? '') }}" class="form-control @error('name') is-invalid @enderror" required maxlength="255" autocomplete="off">
                     @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
@@ -46,24 +66,27 @@
 
                 <div class="col-12">
                     <label for="slug" class="form-label">Slug</label>
-                    <input type="text" name="slug" id="slug" value="{{ old('slug', $device->slug ?? '') }}" class="form-control @error('slug') is-invalid @enderror" maxlength="255">
-                    <div class="form-text">Leave empty to generate a unique slug from brand and device name.</div>
+                    <input type="text" name="slug" id="slug" value="{{ old('slug', $device->slug ?? '') }}" class="form-control @error('slug') is-invalid @enderror" maxlength="255" autocomplete="off">
+                    <div class="form-text">Leave empty to generate the URL slug automatically. Enter one only when you need a custom URL.</div>
                     @error('slug')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="col-12">
                     <label for="image" class="form-label">Device Image</label>
                     <input type="file" name="image" id="image" accept="image/*" class="form-control @error('image') is-invalid @enderror">
-                    <div class="form-text">JPG, PNG, or WEBP. Maximum 2 MB.</div>
+                    <div class="form-text">Use a clean device product image. Maximum 2 MB.</div>
                     @error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror
 
-                    @isset($device)
-                        @if($device->image)
-                            <div class="mt-3">
-                                <img src="{{ asset('storage/' . $device->image) }}" alt="{{ $device->name }}" class="border bg-light p-2" style="width: 120px; height: 120px; object-fit: contain;">
-                            </div>
-                        @endif
-                    @endisset
+                    <div id="image-preview" class="mt-3 {{ isset($device) && $device->image ? '' : 'd-none' }}">
+                        <div class="text-muted small mb-2">Image preview</div>
+                        <img
+                            id="image-preview-img"
+                            src="{{ isset($device) && $device->image ? asset('storage/' . $device->image) : '' }}"
+                            alt="{{ isset($device) ? $device->name : 'Device preview' }}"
+                            class="border bg-light p-2"
+                            style="width:140px;height:140px;object-fit:contain;"
+                        >
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,7 +95,7 @@
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
                 <div>
                     <h2 class="h5 mb-1">Specifications</h2>
-                    <p class="text-muted small mb-0">Add specifications in the order they should appear on the device page.</p>
+                    <p class="text-muted small mb-0">Add only the specifications you have verified. Use common categories or type your own.</p>
                 </div>
                 <button type="button" class="btn btn-sm btn-outline-dark" id="add-spec">Add Specification</button>
             </div>
@@ -100,7 +123,7 @@
     <div class="col-lg-4">
         <div class="bg-white border p-4">
             <h2 class="h5 mb-1">Save Device</h2>
-            <p class="text-muted small mb-4">Save the device after reviewing the information and specifications.</p>
+            <p class="text-muted small mb-4">Save when the core information and specifications are complete.</p>
 
             <button type="submit" class="btn btn-dark me-2">
                 {{ isset($device) ? 'Update Device' : 'Create Device' }}
@@ -119,6 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const brand = document.getElementById('brand_id');
     const name = document.getElementById('name');
     const slug = document.getElementById('slug');
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('image-preview');
+    const imagePreviewImg = document.getElementById('image-preview-img');
 
     let specIndex = {{ count($formSpecs) }};
     let slugManual = slug?.value.trim() !== '';
@@ -147,6 +173,19 @@ document.addEventListener('DOMContentLoaded', () => {
     brand?.addEventListener('change', updateSlug);
     name?.addEventListener('input', updateSlug);
 
+    imageInput?.addEventListener('change', () => {
+        const file = imageInput.files?.[0];
+
+        if (!file) {
+            imagePreview?.classList.add('d-none');
+            return;
+        }
+
+        const objectUrl = URL.createObjectURL(file);
+        imagePreviewImg.src = objectUrl;
+        imagePreview?.classList.remove('d-none');
+    });
+
     function addRow() {
         const row = document.createElement('div');
         row.className = 'border p-3 mb-3 spec-row';
@@ -158,15 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="row g-3">
                 <div class="col-md-4">
                     <label class="form-label small">Category</label>
-                    <select name="specs[${specIndex}][category]" class="form-select form-select-sm" required>
-                        <option value="">Select category</option>
-                        <option value="Display">Display</option>
-                        <option value="Camera">Camera</option>
-                        <option value="Battery">Battery</option>
-                        <option value="Performance">Performance</option>
-                        <option value="Body">Body</option>
-                        <option value="Connectivity">Connectivity</option>
-                    </select>
+                    <input type="text" name="specs[${specIndex}][category]" class="form-control form-control-sm" list="spec-category-options" placeholder="Display" required maxlength="100">
                 </div>
                 <div class="col-md-4">
                     <label class="form-label small">Spec Name</label>
