@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class NewsController extends Controller
@@ -23,8 +24,18 @@ class NewsController extends Controller
 
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('body', 'like', "%{$search}%");
+                    ->orWhere('body', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%");
             });
+        }
+
+        if ($request->filled('status')) {
+            match ($request->string('status')->toString()) {
+                'draft' => $query->whereNull('published_at'),
+                'scheduled' => $query->where('published_at', '>', now()),
+                'published' => $query->whereNotNull('published_at')->where('published_at', '<=', now()),
+                default => null,
+            };
         }
 
         return view('admin.news.index', [
@@ -94,15 +105,14 @@ class NewsController extends Controller
 
     private function validatePost(Request $request, ?int $postId = null): array
     {
-        $slugRule = 'unique:news_posts,slug';
-
-        if ($postId) {
-            $slugRule .= ',' . $postId;
-        }
-
         return $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', $slugRule],
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('news_posts', 'slug')->ignore($postId),
+            ],
             'body' => ['required', 'string'],
             'image' => ['nullable', 'image', 'max:4096'],
             'published_at' => ['nullable', 'date'],
