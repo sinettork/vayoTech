@@ -23,7 +23,7 @@
                                     width="28"
                                     height="28"
                                     loading="lazy"
-                                    style="object-fit:contain;background:transparent;border:0;"
+                                    class="phone-brand-logo"
                                 >
                             @elseif($brand->logo)
                                 <img
@@ -32,7 +32,7 @@
                                     width="28"
                                     height="28"
                                     loading="lazy"
-                                    style="object-fit:contain;background:transparent;border:0;"
+                                    class="phone-brand-logo"
                                 >
                             @endif
                             <span>{{ $brand->name }}</span>
@@ -99,16 +99,47 @@
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <div>
                     <span class="text-primary small fw-semibold">Browse by manufacturer</span>
-                    <h2 class="h3 mb-1">Explore brands</h2>
+                    <h2 class="h3 mb-1">Phone brands</h2>
                     <p class="text-muted mb-0">Find phones by brand and discover the full device lineup.</p>
                 </div>
                 <a href="{{ route('brands.index') }}" class="btn btn-outline-primary btn-sm">View all</a>
             </div>
 
-            <div class="brand-card-grid">
-                @foreach ($brands->take(8) as $brand)
-                    <x-brand-card :brand="$brand" />
-                @endforeach
+            <div class="card content-card">
+                <div class="card-header bg-dark text-white">
+                    <strong class="sidebar-title">Phone brands</strong>
+                </div>
+                <div class="list-group list-group-flush phone-finder-list">
+                    @foreach ($brands->take(8) as $brand)
+                        <a href="{{ route('brands.show', $brand) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex align-items-center gap-2">
+                                @if($brand->brandfetch_logo_url)
+                                    <img
+                                        src="{{ $brand->brandfetch_logo_url }}"
+                                        alt="{{ $brand->name }}"
+                                        width="28"
+                                        height="28"
+                                        loading="lazy"
+                                        class="phone-brand-logo"
+                                    >
+                                @elseif($brand->logo)
+                                    <img
+                                        src="{{ asset('storage/' . $brand->logo) }}"
+                                        alt="{{ $brand->name }}"
+                                        width="28"
+                                        height="28"
+                                        loading="lazy"
+                                        class="phone-brand-logo"
+                                    >
+                                @endif
+                                <span>{{ $brand->name }}</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ route('brands.index') }}" class="btn btn-sm btn-outline-dark">Explore all brands</a>
+                </div>
             </div>
         </section>
 
