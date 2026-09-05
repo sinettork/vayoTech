@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
 
@@ -144,15 +145,14 @@ class BrandController extends Controller
 
     private function validateBrand(Request $request, ?int $brandId = null): array
     {
-        $slugRule = 'unique:brands,slug';
-
-        if ($brandId) {
-            $slugRule .= ',' . $brandId;
-        }
-
         return $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', $slugRule],
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('brands', 'slug')->ignore($brandId),
+            ],
             'brand_domain' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'logo' => ['nullable', 'image', 'max:2048'],
