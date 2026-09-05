@@ -82,6 +82,13 @@
                             News
                         </a>
 
+                        <a
+                            class="nav-link {{ request()->routeIs('admin.imports.*') ? 'active' : '' }}"
+                            href="{{ route('admin.imports.index') }}"
+                        >
+                            Data imports
+                        </a>
+
                     </nav>
                 </div>
 
