@@ -44,55 +44,55 @@
     </header>
 
     <div class="admin-main">
+        <div class="admin-main-shell page-shell">
 
-        <aside class="admin-sidebar">
-            <div class="p-3">
-                <div class="sidebar-title mb-2">
-                    Administration
+            <aside class="admin-sidebar">
+                <div class="p-3">
+                    <div class="sidebar-title mb-2">
+                        Administration
+                    </div>
+
+                    <nav class="nav flex-column">
+
+                        <a
+                            class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                            href="{{ route('admin.dashboard') }}"
+                        >
+                            Dashboard
+                        </a>
+
+                        <a
+                            class="nav-link {{ request()->routeIs('admin.devices.*') ? 'active' : '' }}"
+                            href="{{ route('admin.devices.index') }}"
+                        >
+                            Devices
+                        </a>
+
+                        <a
+                            class="nav-link {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}"
+                            href="{{ route('admin.brands.index') }}"
+                        >
+                            Brands
+                        </a>
+
+                        <a
+                            class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}"
+                            href="{{ route('admin.news.index') }}"
+                        >
+                            News
+                        </a>
+
+                    </nav>
                 </div>
 
-                <nav class="nav flex-column">
-
-                    <a
-                        class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
-                        href="{{ route('admin.dashboard') }}"
-                    >
-                        Dashboard
-                    </a>
-
-                    <a
-                        class="nav-link {{ request()->routeIs('admin.devices.*') ? 'active' : '' }}"
-                        href="{{ route('admin.devices.index') }}"
-                    >
-                        Devices
-                    </a>
-
-                    <a
-                        class="nav-link {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}"
-                        href="{{ route('admin.brands.index') }}"
-                    >
-                        Brands
-                    </a>
-
-                    <a
-                        class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}"
-                        href="{{ route('admin.news.index') }}"
-                    >
-                        News
-                    </a>
-
-                </nav>
-            </div>
-
-            <div class="admin-sidebar-footer p-3 border-top">
-                <div class="small text-secondary">
-                    Laravel {{ app()->version() }}
+                <div class="admin-sidebar-footer p-3 border-top">
+                    <div class="small text-secondary">
+                        Laravel {{ app()->version() }}
+                    </div>
                 </div>
-            </div>
-        </aside>
+            </aside>
 
-        <main class="admin-content">
-            <div class="page-shell">
+            <main class="admin-content">
 
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -119,11 +119,13 @@
                     </div>
                 @endif
 
-                @yield('content')
+                <div class="admin-content-inner">
+                    @yield('content')
+                </div>
 
-            </div>
-        </main>
+            </main>
 
+        </div>
     </div>
 </div>
 
