@@ -9,18 +9,20 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class DeviceController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Device::with('brand')->latest('release_date');
+        $query = Device::with('brand')->latest('release_date')->latest('id');
 
         if ($request->filled('search')) {
             $search = trim($request->string('search')->toString());
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%")
                     ->orWhereHas('brand', fn ($brand) => $brand->where('name', 'like', "%{$search}%"));
             });
         }
@@ -102,7 +104,12 @@ class DeviceController extends Controller
         return $request->validate([
             'brand_id' => ['required', 'integer', 'exists:brands,id'],
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:devices,slug,' . $deviceId],
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('devices', 'slug')->ignore($deviceId),
+            ],
             'release_date' => ['nullable', 'date'],
             'status' => ['required', 'in:rumored,available,discontinued'],
             'image' => ['nullable', 'image', 'max:2048'],
@@ -116,7 +123,7 @@ class DeviceController extends Controller
     private function uniqueSlug(string $name, int $brandId): string
     {
         $brand = Brand::find($brandId);
-        $base = Str::slug(($brand?->name ? $brand->name . ' ' : '') . $name);
+        $base = Str::slug(($brand?->name ? $brand->name . ' ' : '') . $name) ?: 'device';
         $slug = $base;
         $counter = 2;
 
