@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Device;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class DeviceController extends Controller
@@ -78,8 +79,11 @@ class DeviceController extends Controller
         $device->load([
             'brand',
             'specs' => fn ($query) => $query->orderBy('sort_order'),
-            'variants',
         ]);
+
+        if (Schema::hasTable('device_variants')) {
+            $device->load('variants');
+        }
 
         $groupedSpecs = $device->specs->groupBy('category');
 
