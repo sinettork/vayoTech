@@ -12,7 +12,7 @@
             <div class="card-header bg-dark text-white">
                 <strong class="sidebar-title">Phone finder</strong>
             </div>
-            <div class="list-group list-group-flush">
+            <div class="list-group list-group-flush phone-finder-list">
                 @foreach ($brands as $brand)
                     <a href="{{ route('brands.show', $brand) }}" class="list-group-item list-group-item-action">
                         <div class="d-flex align-items-center gap-2">
