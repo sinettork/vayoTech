@@ -17,8 +17,6 @@
     <section class="compare-workspace mb-4" aria-label="Phone comparison workspace">
         <div class="compare-slots">
             @for ($slot = 0; $slot < 3; $slot++)
-                @php($device = $devices->get($slot))
-
                 <section class="compare-slot" data-slot="{{ $slot }}" aria-label="Comparison slot {{ $slot + 1 }}">
                     <div class="compare-slot-search">
                         <label class="compare-search-label" for="compare-search-{{ $slot }}">Compare with</label>
@@ -44,13 +42,13 @@
                         </div>
                     </div>
 
-                    @if ($device)
+                    @if ($devices->get($slot))
                         <div class="compare-device-head">
                             <div class="compare-device-image-wrap">
-                                @if ($device->image)
+                                @if ($devices->get($slot)->image)
                                     <img
-                                        src="{{ asset('storage/' . $device->image) }}"
-                                        alt="{{ $device->brand->name }} {{ $device->name }}"
+                                        src="{{ asset('storage/' . $devices->get($slot)->image) }}"
+                                        alt="{{ $devices->get($slot)->brand->name }} {{ $devices->get($slot)->name }}"
                                         class="compare-device-image"
                                         loading="eager"
                                     >
@@ -60,14 +58,14 @@
                             </div>
 
                             <div class="compare-device-copy">
-                                <div class="small text-muted text-uppercase fw-semibold">{{ $device->brand->name }}</div>
-                                <h2 class="compare-device-name">{{ $device->name }}</h2>
+                                <div class="small text-muted text-uppercase fw-semibold">{{ $devices->get($slot)->brand->name }}</div>
+                                <h2 class="compare-device-name">{{ $devices->get($slot)->name }}</h2>
                                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                                    @if ($device->release_date)
-                                        <span class="text-muted small">{{ $device->release_date->format('Y') }}</span>
+                                    @if ($devices->get($slot)->release_date)
+                                        <span class="text-muted small">{{ substr((string) $devices->get($slot)->release_date, 0, 4) }}</span>
                                     @endif
-                                    @if ($device->status)
-                                        <span class="badge rounded-pill text-bg-light border text-capitalize">{{ $device->status }}</span>
+                                    @if ($devices->get($slot)->status)
+                                        <span class="badge rounded-pill text-bg-light border text-capitalize">{{ $devices->get($slot)->status }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -76,32 +74,33 @@
                                 type="button"
                                 class="btn btn-sm btn-light border compare-remove"
                                 data-slot="{{ $slot }}"
-                                aria-label="Remove {{ $device->name }} from comparison"
+                                aria-label="Remove phone from comparison"
                             >&times;</button>
                         </div>
 
-                        @php
-                            $screen = $device->specs->first(fn ($spec) => strcasecmp($spec->spec_key, 'Screen Size') === 0)?->spec_value;
-                            $camera = $device->specs->first(fn ($spec) => strcasecmp($spec->spec_key, 'Main Camera') === 0)?->spec_value;
-                            $ram = $device->specs->first(fn ($spec) => strcasecmp($spec->spec_key, 'RAM') === 0)?->spec_value;
-                            $battery = $device->specs->first(fn ($spec) => strcasecmp($spec->spec_key, 'Capacity') === 0)?->spec_value;
-                        @endphp
-
                         <div class="compare-quick-grid">
-                            @foreach (['Screen' => $screen, 'Camera' => $camera, 'RAM' => $ram, 'Battery' => $battery] as $label => $value)
-                                <div class="compare-quick-item">
-                                    <span class="compare-quick-label">{{ $label }}</span>
-                                    <strong class="compare-quick-value">{{ $value ?: '—' }}</strong>
-                                </div>
-                            @endforeach
+                            <div class="compare-quick-item">
+                                <span class="compare-quick-label">Screen</span>
+                                <strong class="compare-quick-value">{{ $quickSpecs->get($slot)['screen'] ?? '—' }}</strong>
+                            </div>
+                            <div class="compare-quick-item">
+                                <span class="compare-quick-label">Camera</span>
+                                <strong class="compare-quick-value">{{ $quickSpecs->get($slot)['camera'] ?? '—' }}</strong>
+                            </div>
+                            <div class="compare-quick-item">
+                                <span class="compare-quick-label">RAM</span>
+                                <strong class="compare-quick-value">{{ $quickSpecs->get($slot)['ram'] ?? '—' }}</strong>
+                            </div>
+                            <div class="compare-quick-item">
+                                <span class="compare-quick-label">Battery</span>
+                                <strong class="compare-quick-value">{{ $quickSpecs->get($slot)['battery'] ?? '—' }}</strong>
+                            </div>
                         </div>
 
                         <div class="compare-device-actions">
-                            <a href="{{ route('devices.show', $device) }}" class="btn btn-sm btn-outline-primary">View specifications</a>
+                            <a href="{{ route('devices.show', $devices->get($slot)) }}" class="btn btn-sm btn-outline-primary">View specifications</a>
                         </div>
-                    @endif
-
-                    @if (!$device)
+                    @else
                         <div class="compare-empty-state">
                             <div class="compare-empty-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24">
@@ -142,41 +141,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($groupedKeys as $category => $keys)
-                            <tr class="compare-category-row">
-                                <th colspan="{{ $devices->count() + 1 }}">{{ $category }}</th>
-                            </tr>
-
-                            @foreach ($keys as $key => $_)
-                                @php
-                                    $values = [];
-                                    foreach ($devices as $compareDevice) {
-                                        $match = $compareDevice->specs->first(fn ($specification) => $specification->category === $category && $specification->spec_key === $key);
-                                        $values[] = $match?->spec_value;
-                                    }
-                                    $normalizedValues = collect($values)
-                                        ->filter(fn ($value) => filled($value))
-                                        ->map(fn ($value) => trim((string) $value))
-                                        ->unique()
-                                        ->values();
-                                    $hasDifference = $normalizedValues->count() > 1;
-                                @endphp
-
-                                <tr>
-                                    <th class="compare-spec-name">{{ $key }}</th>
-                                    @foreach ($values as $value)
-                                        <td class="{{ $hasDifference ? 'compare-value-different' : '' }}">{{ $value ?: '—' }}</td>
-                                    @endforeach
+                        @foreach ($compareRows as $row)
+                            @if ($loop->first || $row['category'] !== $compareRows[$loop->index - 1]['category'])
+                                <tr class="compare-category-row">
+                                    <th colspan="{{ $devices->count() + 1 }}">{{ $row['category'] }}</th>
                                 </tr>
-                            @endforeach
+                            @endif
+                            <tr>
+                                <th class="compare-spec-name">{{ $row['key'] }}</th>
+                                @foreach ($row['values'] as $value)
+                                    <td class="{{ $row['has_difference'] ? 'compare-value-different' : '' }}">{{ $value ?: '—' }}</td>
+                                @endforeach
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
         </section>
-    @endif
-
-    @if ($devices->count() < 2)
+    @else
         <div class="compare-howto card content-card">
             <div class="card-body py-4">
                 <div class="d-flex gap-3 align-items-start">
@@ -190,18 +172,12 @@
         </div>
     @endif
 </div>
+@endsection
 
 @push('scripts')
 <script>
 (() => {
-    const devices = @json($allDevices->map(fn ($device) => [
-        'id' => $device->id,
-        'name' => $device->name,
-        'brand' => $device->brand?->name,
-        'url' => route('devices.show', $device),
-        'image' => $device->image ? asset('storage/' . $device->image) : null,
-    ])->values());
-
+    const devices = @json($compareSearchData);
     const selectedIds = @json($devices->pluck('id')->values());
     const compareUrl = @json(route('compare.index'));
 
@@ -298,4 +274,3 @@
 })();
 </script>
 @endpush
-@endsection
