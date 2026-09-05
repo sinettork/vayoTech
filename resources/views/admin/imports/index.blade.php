@@ -8,7 +8,7 @@
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
         <div>
             <h1 class="h3 mb-1">Data imports</h1>
-            <p class="text-muted mb-0">Import many phone records from a CSV file at once.</p>
+            <p class="text-muted mb-0">Review phone data before changing the catalog.</p>
         </div>
     </div>
 </div>
@@ -35,10 +35,10 @@
     <div class="card-body p-4">
         <h2 class="h5 mb-2">Import phone data</h2>
         <p class="text-muted small mb-3">
-            CSV files can contain device fields plus any number of <code>spec_*</code> columns.
+            The file is checked first. Nothing is written to the catalog until you confirm the preview.
         </p>
 
-        <form method="POST" action="{{ route('admin.imports.store') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('admin.imports.preview') }}" enctype="multipart/form-data">
             @csrf
             <div class="row g-3 align-items-end">
                 <div class="col-lg-9">
@@ -46,7 +46,7 @@
                     <input type="file" id="import-file" name="file" class="form-control" accept=".csv,.txt" required>
                 </div>
                 <div class="col-lg-3 d-grid">
-                    <button type="submit" class="btn btn-dark">Import data</button>
+                    <button type="submit" class="btn btn-dark">Preview import</button>
                 </div>
             </div>
         </form>
@@ -56,7 +56,7 @@
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-4">
         <h2 class="h5">CSV format</h2>
-        <p class="text-muted small">Use these columns for the device fields. Specification columns are optional.</p>
+        <p class="text-muted small">Use these columns for device fields. Specification columns are optional.</p>
         <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
                 <thead>
@@ -105,8 +105,8 @@
                 <td>{{ $import->total_rows }}</td>
                 <td><span class="badge text-bg-success">{{ $import->successful_rows }}</span></td>
                 <td>
-                    @if($import->failedRows()->count())
-                        <span class="badge text-bg-danger">{{ $import->failedRows()->count() }}</span>
+                    @if($import->failed_rows_count)
+                        <span class="badge text-bg-danger">{{ $import->failed_rows_count }}</span>
                     @else
                         <span class="text-muted">0</span>
                     @endif
