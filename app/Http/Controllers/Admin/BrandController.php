@@ -1,16 +1,16 @@
 <?php
 
-namespace AppHttpControllersAdmin;
+namespace App\Http\Controllers\Admin;
 
-use AppHttpControllersController;
-use AppModelsBrand;
-use AppServicesBrandfetchService;
-use IlluminateHttpJsonResponse;
-use IlluminateHttpRedirectResponse;
-use IlluminateHttpRequest;
-use IlluminateSupportFacadesStorage;
-use IlluminateSupportStr;
-use IlluminateViewView;
+use App\Http\Controllers\Controller;
+use App\Models\Brand;
+use App\Services\BrandfetchService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Throwable;
 
 class BrandController extends Controller
