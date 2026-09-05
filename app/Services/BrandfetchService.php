@@ -25,7 +25,7 @@ class BrandfetchService
         return $response->json() ?? [];
     }
 
-    public function logoUrl(?string $domain, string $type = 'icon'): ?string
+    public function logoUrl(?string $domain): ?string
     {
         $clientId = config('services.brandfetch.client_id');
 
@@ -35,11 +35,8 @@ class BrandfetchService
 
         return 'https://cdn.brandfetch.io/domain/'
             . rawurlencode($this->normalizeDomain($domain))
-            . '/h/128/w/128/'
-            . rawurlencode($type)
-            . '.png?c='
-            . rawurlencode($clientId)
-            . '&fallback=transparent';
+            . '?c='
+            . rawurlencode($clientId);
     }
 
     public function normalizeDomain(string $domain): string
