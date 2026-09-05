@@ -35,7 +35,7 @@ class Brand extends Model
     {
         $clientId = config('services.brandfetch.client_id');
 
-        if (!$clientId || !$this->brand_domain) {
+        if (!$clientId || blank($this->brand_domain)) {
             return null;
         }
 
@@ -45,8 +45,7 @@ class Brand extends Model
 
         return 'https://cdn.brandfetch.io/domain/'
             . rawurlencode(strtolower($domain))
-            . '/h/128/w/128/icon.png?c='
-            . rawurlencode($clientId)
-            . '&fallback=lettermark';
+            . '?c='
+            . rawurlencode($clientId);
     }
 }
