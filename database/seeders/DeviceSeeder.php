@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Brand;
 use App\Models\DataSource;
 use App\Models\DeviceSpec;
+use App\Models\DeviceVariant;
 use App\Models\SpecDefinition;
 use App\Models\Device;
 use Illuminate\Database\Seeder;
@@ -81,52 +82,30 @@ OnePlus|OnePlus 12|2024-01-23|6.82|3168 x 1440|120|Snapdragon 8 Gen 3|12/16/24|2
 OnePlus|OnePlus 12R|2024-02-06|6.78|2780 x 1264|120|Snapdragon 8 Gen 2|8/16|128/256|50 MP + 8 MP ultrawide + 2 MP macro|16 MP|5500|100W wired|207|IP65|1|0
 OnePlus|OnePlus Nord 4|2024-08-08|6.74|2772 x 1240|120|Snapdragon 7+ Gen 3|8/12/16|128/256/512|50 MP OIS + 8 MP ultrawide|16 MP|5500|100W wired|199.5|IP65|1|0
 Google|Pixel 9 Pro XL|2024-08-22|6.8|2992 x 1344|120|Tensor G4|16|128/256/512/1024|50 MP + 48 MP 5x telephoto + 48 MP ultrawide|42 MP|5060|37W wired / 23W wireless|221|IP68|1|0
-Google|Pixel 9 Pro|2024-09-04|6.3|2856 x 1280|120|Tensor G4|16|128/256/512|50 MP + 48 MP 5x telephoto + 48 MP ultrawide|42 MP|4700|27W wired / 21W wireless|199|IP68|1|0
+Google|Pixel 9 Pro|2024-09-04|6.3|2856 x 1280|120|Tensor G4|16|128/256/512|50 MP + 48 MP 5x telephoto + 48 MP ultrawide|42 MP|4700|37W wired / 23W wireless|199|IP68|1|0
 Google|Pixel 9|2024-08-22|6.3|2424 x 1080|120|Tensor G4|12|128/256|50 MP + 48 MP ultrawide|10.5 MP|4700|27W wired / 15W wireless|198|IP68|1|0
-Google|Pixel 8 Pro|2023-10-12|6.7|2992 x 1344|120|Tensor G3|12|128/256/512/1024|50 MP + 48 MP 5x telephoto + 48 MP ultrawide|10.5 MP|5050|30W wired / 23W wireless|213|IP68|1|0
-Google|Pixel 8|2023-10-12|6.2|2400 x 1080|120|Tensor G3|8|128/256|50 MP + 12 MP ultrawide|10.5 MP|4575|27W wired / 18W wireless|187|IP68|1|0
-Sony|Xperia 1 VI|2024-06-07|6.5|2340 x 1080|120|Snapdragon 8 Gen 3|12/16|256/512|48 MP + 12 MP 3.5x-7.1x telephoto + 12 MP ultrawide|12 MP|5000|30W wired / wireless|192|IP65/IP68|1|1
-Sony|Xperia 5 V|2023-09-27|6.1|2520 x 1080|120|Snapdragon 8 Gen 2|8|128|48 MP + 12 MP ultrawide|12 MP|5000|30W wired / wireless|182|IP65/IP68|1|1
-Sony|Xperia 1 V|2023-06-11|6.5|2560 x 1096|120|Snapdragon 8 Gen 2|12/16|256/512|48 MP + 12 MP 3.5x-5.2x telephoto + 12 MP ultrawide|12 MP|5000|30W wired / wireless|187|IP65/IP68|1|1
-Sony|Xperia 10 VI|2024-06-01|6.1|2520 x 1080|60|Snapdragon 6 Gen 1|8|128|48 MP + 8 MP ultrawide|8 MP|5000|30W wired|164|IP65/IP68|1|1
+Sony|Xperia 1 VI|2024-06-01|6.5|2340 x 1080|120|Snapdragon 8 Gen 3|12|256/512|48 MP + 12 MP 3.5-7.1x telephoto + 12 MP ultrawide|12 MP|5000|30W wired / wireless|192|IP65/IP68|1|1
+Sony|Xperia 5 V|2023-09-01|6.1|2520 x 1080|120|Snapdragon 8 Gen 2|8|128|48 MP + 12 MP ultrawide|12 MP|5000|30W wired / wireless|182|IP65/IP68|1|1
 Motorola|Edge 50 Ultra|2024-06-17|6.67|2712 x 1220|144|Snapdragon 8s Gen 3|12/16|512/1024|50 MP + 64 MP 3x telephoto + 50 MP ultrawide|50 MP|4500|125W wired / 50W wireless|197|IP68|1|0
-Motorola|Edge 50 Pro|2024-04-16|6.7|2712 x 1220|144|Snapdragon 7 Gen 3|8/12|256/512|50 MP OIS + 10 MP 3x telephoto + 13 MP ultrawide|50 MP|4500|125W wired / 50W wireless|186|IP68|1|0
-Motorola|Edge 50 Fusion|2024-05-16|6.7|2400 x 1080|144|Snapdragon 7s Gen 2|8/12|128/256/512|50 MP OIS + 13 MP ultrawide|32 MP|5000|68W wired|174.9|IP68|1|0
+Motorola|Edge 50 Pro|2024-04-16|6.7|2712 x 1220|144|Snapdragon 7 Gen 3|8/12|256/512|50 MP + 10 MP 3x telephoto + 13 MP ultrawide|50 MP|4500|125W wired / 50W wireless|186|IP68|1|0
 Motorola|Razr 50 Ultra|2024-07-10|6.9|2640 x 1080|165|Snapdragon 8s Gen 3|12|512|50 MP + 50 MP 2x telephoto|32 MP|4000|45W wired / 15W wireless|189|IPX8|1|0
-Motorola|ThinkPhone 25|2024-10-28|6.36|2670 x 1220|120|Dimensity 7300|8|256|50 MP OIS + 13 MP ultrawide + 10 MP 3x telephoto|32 MP|4310|68W wired|171|IP68|1|0
-Nothing|Phone (3a) Pro|2025-03-11|6.77|2392 x 1080|120|Snapdragon 7s Gen 3|8/12|128/256|50 MP + 50 MP 2.5x periscope + 8 MP ultrawide|50 MP|5000|50W wired|211|IP64|1|0
-Nothing|Phone (3a)|2025-03-11|6.77|2392 x 1080|120|Snapdragon 7s Gen 3|8/12|128/256|50 MP + 50 MP 2x telephoto + 8 MP ultrawide|32 MP|5000|50W wired|201|IP64|1|0
-Nothing|Phone (2)|2023-07-17|6.7|2412 x 1084|120|Snapdragon 8+ Gen 1|8/12/16|128/256/512|50 MP OIS + 50 MP ultrawide|32 MP|4700|45W wired / 15W wireless|201|IP54|1|0
 Nothing|Phone (2a)|2024-03-12|6.7|2412 x 1084|120|Dimensity 7200 Pro|8/12|128/256|50 MP + 50 MP ultrawide|32 MP|5000|45W wired|190|IP54|1|0
-Oppo|Find X8 Pro|2024-11-21|6.78|2780 x 1264|120|Dimensity 9400|12/16|256/512|50 MP + 50 MP 3x + 50 MP 6x + 50 MP ultrawide|32 MP|5910|80W wired / 50W wireless|215|IP68/IP69|1|0
-Oppo|Find X8|2024-11-21|6.59|2760 x 1256|120|Dimensity 9400|12/16|256/512|50 MP + 50 MP 3x telephoto + 50 MP ultrawide|32 MP|5630|80W wired / 50W wireless|193|IP68/IP69|1|0
-Oppo|Reno 13 Pro|2025-01-25|6.83|2800 x 1272|120|Dimensity 8350|12|256/512|50 MP OIS + 50 MP 3.5x telephoto + 8 MP ultrawide|50 MP|5800|80W wired|195|IP69|1|0
-Oppo|Reno 12 Pro|2024-06-18|6.7|2412 x 1080|120|Dimensity 7300-Energy|12|256/512|50 MP OIS + 50 MP telephoto + 8 MP ultrawide|50 MP|5000|80W wired|183|IP65|1|0
-Oppo|Reno 11 Pro|2023-11-23|6.7|2412 x 1080|120|Dimensity 8200|12|256|50 MP + 32 MP 2x telephoto + 8 MP ultrawide|32 MP|4600|80W wired|181|IP65|1|0
-Oppo|A5 Pro 5G|2025-01-09|6.67|2400 x 1080|120|Dimensity 6300|8|256|50 MP + 2 MP|8 MP|5800|45W wired|194|IP69|1|0
-Vivo|X200 Pro|2024-10-14|6.78|2800 x 1260|120|Dimensity 9400|12/16|256/512|50 MP + 200 MP 3.7x periscope + 50 MP ultrawide|32 MP|6000|90W wired / 30W wireless|228|IP68/IP69|1|0
-Vivo|X200|2024-10-14|6.67|2800 x 1260|120|Dimensity 9400|12/16|256/512|50 MP + 50 MP 3x telephoto + 50 MP ultrawide|32 MP|5800|90W wired|197|IP68/IP69|1|0
+Nothing|Phone (2)|2023-07-17|6.7|2412 x 1084|120|Snapdragon 8+ Gen 1|8/12|128/256/512|50 MP + 50 MP ultrawide|32 MP|4700|45W wired|201.2|IP54|1|0
+Oppo|Find X8 Pro|2024-11-21|6.78|2780 x 1264|120|Dimensity 9400|12/16|256/512/1024|50 MP + 50 MP 3x + 50 MP 6x + 50 MP ultrawide|32 MP|5910|80W wired / 50W wireless|215|IP68/IP69|1|0
+Oppo|Find X8|2024-11-21|6.59|2760 x 1256|120|Dimensity 9400|12/16|256/512|50 MP + 50 MP 3x + 50 MP ultrawide|32 MP|5630|80W wired / 50W wireless|193|IP68/IP69|1|0
+Oppo|Reno12 Pro|2024-06-06|6.7|2412 x 1080|120|Dimensity 7300-Energy|12|512|50 MP + 50 MP 2x telephoto + 8 MP ultrawide|50 MP|5000|80W wired|183|IP65|1|0
+Vivo|X200 Pro|2024-10-14|6.78|2800 x 1260|120|Dimensity 9400|16|512/1024|50 MP + 200 MP 3.7x periscope + 50 MP ultrawide|32 MP|6000|90W wired|228|IP68/IP69|1|0
+Vivo|X200|2024-10-14|6.67|2800 x 1260|120|Dimensity 9400|12/16|256/512|50 MP + 50 MP 3x periscope + 50 MP ultrawide|32 MP|5800|90W wired|197|IP68/IP69|1|0
 Vivo|V40 Pro|2024-08-07|6.78|2800 x 1260|120|Dimensity 9200+|8/12|256/512|50 MP + 50 MP 2x telephoto + 50 MP ultrawide|50 MP|5500|80W wired|192|IP68|1|0
-Vivo|V40|2024-08-07|6.78|2800 x 1260|120|Snapdragon 7 Gen 3|8/12|256/512|50 MP OIS + 50 MP ultrawide|50 MP|5500|80W wired|190|IP68|1|0
-Vivo|V30 Pro|2024-03-07|6.78|2800 x 1260|120|Dimensity 8200|8/12|256/512|50 MP + 50 MP 2x telephoto + 50 MP ultrawide|50 MP|5000|80W wired|187|IP54|1|0
-Vivo|V30|2024-02-28|6.78|2800 x 1260|120|Snapdragon 7 Gen 3|8/12|128/256/512|50 MP OIS + 8 MP ultrawide|50 MP|5000|80W wired|186|IP54|1|0
-Realme|GT 7 Pro|2024-11-19|6.78|2780 x 1264|120|Snapdragon 8 Elite|12/16|256/512|50 MP + 50 MP 3x periscope + 8 MP ultrawide|16 MP|6500|120W wired|222.8|IP68/IP69|1|0
+Realme|GT 7 Pro|2024-11-19|6.78|2780 x 1264|120|Snapdragon 8 Elite|12/16|256/512/1024|50 MP + 50 MP 3x periscope + 8 MP ultrawide|16 MP|6500|120W wired|222.8|IP69|1|0
 Realme|GT 6|2024-06-20|6.78|2780 x 1264|120|Snapdragon 8s Gen 3|8/12/16|256/512|50 MP OIS + 50 MP 2x telephoto + 8 MP ultrawide|32 MP|5500|120W wired|199|IP65|1|0
 Realme|12 Pro+|2024-01-29|6.7|2412 x 1080|120|Snapdragon 7s Gen 2|8/12|128/256|50 MP + 64 MP 3x periscope + 8 MP ultrawide|32 MP|5000|67W wired|196|IP65|1|0
-Realme|12 Pro|2024-01-29|6.7|2412 x 1080|120|Snapdragon 6 Gen 1|8|128/256|50 MP OIS + 32 MP 2x telephoto + 8 MP ultrawide|16 MP|5000|67W wired|190|IP65|1|0
-Realme|GT Neo 6 SE|2024-04-11|6.78|2780 x 1264|120|Snapdragon 7+ Gen 3|8/12/16|256/512|50 MP OIS + 8 MP ultrawide|32 MP|5500|100W wired|191|IP65|1|0
-Honor|Magic7 Pro|2025-01-15|6.8|2800 x 1280|120|Snapdragon 8 Elite|12/16|512/1024|50 MP + 200 MP 3x periscope + 50 MP ultrawide|50 MP|5850|100W wired / 80W wireless|223|IP68/IP69|1|0
-Honor|Magic6 Pro|2024-03-18|6.8|2800 x 1280|120|Snapdragon 8 Gen 3|12/16|256/512/1024|50 MP + 180 MP 2.5x periscope + 50 MP ultrawide|50 MP|5600|80W wired / 66W wireless|225|IP68|1|0
+Honor|Magic7 Pro|2025-01-10|6.8|2800 x 1280|120|Snapdragon 8 Elite|12/16|512/1024|50 MP + 200 MP 3x.7 periscope + 50 MP ultrawide|50 MP|5850|100W wired / 80W wireless|223|IP68/IP69|1|0
 Honor|200 Pro|2024-05-27|6.78|2700 x 1224|120|Snapdragon 8s Gen 3|12|512|50 MP + 50 MP 2.5x telephoto + 12 MP ultrawide|50 MP|5200|100W wired / 66W wireless|199|IP65|1|0
-Honor|90|2023-07-06|6.7|2664 x 1200|120|Snapdragon 7 Gen 1 Accelerated Edition|8/12|256/512|200 MP + 12 MP ultrawide + 2 MP depth|50 MP|5000|66W wired|183|—|1|0
-Honor|X8b|2024-01-11|6.7|2412 x 1080|90|Snapdragon 680|8|128/256/512|108 MP + 5 MP ultrawide + 2 MP macro|50 MP|4500|35W wired|166|—|1|0
-Huawei|Pura 70 Ultra|2024-04-18|6.8|2844 x 1260|120|Kirin 9010|16|512/1024|50 MP 1-inch + 40 MP ultrawide + 50 MP 3.5x telephoto|13 MP|5050|100W wired / 80W wireless|226|IP68|1|0
-Huawei|Mate 70 Pro|2024-11-26|6.9|2832 x 1316|120|Kirin 9020|12|256/512/1024|50 MP + 48 MP 3.5x telephoto + 40 MP ultrawide|13 MP|5500|100W wired / 80W wireless|221|IP69|1|0
-Huawei|P60 Pro|2023-04-06|6.67|2700 x 1220|120|Snapdragon 8+ Gen 1 4G|8/12|256/512|48 MP variable aperture + 48 MP 3.5x telephoto + 13 MP ultrawide|13 MP|4815|88W wired / 50W wireless|197|IP68|1|0
-Huawei|Nova 12 Pro|2024-01-05|6.76|2776 x 1224|120|Kirin 8000|12|256/512|50 MP + 8 MP ultrawide|60 MP + 8 MP|4600|100W wired|201|IP65|1|0
+Huawei|Pura 70 Ultra|2024-04-18|6.8|2844 x 1260|120|Kirin 9010|16|512/1024|50 MP 1-inch variable aperture + 40 MP ultrawide + 48 MP 3.5x telephoto|13 MP|5050|100W wired / 80W wireless|226|IP68|1|0
+Huawei|Mate 60 Pro|2023-08-29|6.82|2720 x 1212|120|Kirin 9000S|12|256/512/1024|50 MP variable aperture + 48 MP 3.5x telephoto + 13 MP ultrawide|13 MP|5000|88W wired / 50W wireless|225|IP68|1|0
 Asus|ROG Phone 9 Pro|2024-11-19|6.78|2400 x 1080|185|Snapdragon 8 Elite|16/24|512/1024|50 MP gimbal OIS + 32 MP 3x telephoto + 13 MP ultrawide|32 MP|5800|65W wired|227|IP68|1|0
-Asus|Zenfone 11 Ultra|2024-03-14|6.78|2400 x 1080|144|Snapdragon 8 Gen 3|12/16|256/512|50 MP gimbal OIS + 32 MP 3x telephoto + 13 MP ultrawide|32 MP|5500|65W wired / 15W wireless|225|IP65|1|0
-Asus|ROG Phone 8 Pro|2024-01-18|6.78|2400 x 1080|165|Snapdragon 8 Gen 3|16/24|512/1024|50 MP gimbal OIS + 32 MP 3x telephoto + 13 MP ultrawide|32 MP|5500|65W wired|225|IP68|1|0
+Asus|Zenfone 11 Ultra|2024-03-14|6.78|2400 x 1080|144|Snapdragon 8 Gen 3|12/16|256/512|50 MP gimbal OIS + 32 MP 3x telephoto + 13 MP ultrawide|32 MP|5500|65W wired|225|IP65|1|0
 ZTE|nubia Z70 Ultra|2024-11-21|6.85|2688 x 1216|144|Snapdragon 8 Elite|12/16/24|256/512/1024|50 MP variable aperture + 64 MP 2.7x periscope + 50 MP ultrawide|16 MP|6150|80W wired|228|IP68|1|0
 ZTE|Axon 60 Ultra|2024-05-09|6.78|2460 x 1116|120|Unisoc T820|12|512|50 MP + 50 MP ultrawide + 32 MP|32 MP|6000|80W wired|—|IP68|1|0
 ZTE|Axon 50 Ultra|2023-04-26|6.67|2400 x 1080|144|Snapdragon 8+ Gen 1|8/12|256/512|64 MP OIS + 50 MP ultrawide + 50 MP telephoto|16 MP|5000|80W wired|197|IP68|1|0
@@ -166,6 +145,24 @@ DATA
             );
 
             $device->specs()->delete();
+            $device->variants()->delete();
+
+            $ramOptions = $this->splitOptions($ram);
+            $storageOptions = $this->splitOptions($storage);
+            $variantSort = 0;
+
+            foreach ($ramOptions as $ramOption) {
+                foreach ($storageOptions as $storageOption) {
+                    DeviceVariant::create([
+                        'device_id' => $device->id,
+                        'ram' => $ramOption . ' GB',
+                        'storage' => $storageOption . ' GB',
+                        'storage_type' => $this->storageTypeFor($chipset),
+                        'is_default' => $variantSort === 0,
+                        'sort_order' => $variantSort++,
+                    ]);
+                }
+            }
 
             $values = [
                 'network_technology' => 'GSM / HSPA / LTE / 5G',
@@ -249,6 +246,15 @@ DATA
         }
 
         $this->command?->info("Seeded {$count} researched phone models across " . count($brands) . ' brands.');
+    }
+
+    private function splitOptions(string $value): array
+    {
+        return collect(preg_split('/\s*[\/,]\s*/', trim($value)))
+            ->map(fn (string $item) => trim($item))
+            ->filter(fn (string $item) => preg_match('/^\d+(?:\.\d+)?$/', $item) === 1)
+            ->values()
+            ->all();
     }
 
     private function numericValue(string $value): ?float
