@@ -15,8 +15,6 @@
             </p>
             @if ($device->status === 'rumored')
                 <span class="badge text-bg-warning">Coming soon</span>
-            @elseif ($device->status === 'available')
-                <span class="badge text-bg-success">Released</span>
             @endif
         </div>
     </a>
