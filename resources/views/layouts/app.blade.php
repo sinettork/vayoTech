@@ -70,7 +70,7 @@
                     </ul>
                     <div class="position-relative mt-3 mt-lg-0" style="width: 300px;">
                         <label class="visually-hidden" for="search-box">Search phones</label>
-                        <input type="search" id="search-box" class="form-control" placeholder="Search phones..." autocomplete="off">
+                        <input type="search" id="search-box" class="form-control" placeholder="Search phones..." autocomplete="off" spellcheck="false">
                         <div id="search-results" class="list-group position-absolute w-100" style="z-index: 1000; display: none;"></div>
                     </div>
                 </div>
@@ -94,43 +94,94 @@
     <script>
 const searchBox = document.getElementById('search-box');
 const resultsBox = document.getElementById('search-results');
+const searchUrl = @json(route('devices.search'));
 let debounceTimer;
+let activeSearchController;
 
 searchBox.addEventListener('input', function () {
     clearTimeout(debounceTimer);
+    activeSearchController?.abort();
+
     const query = this.value.trim();
 
     if (query.length < 2) {
+        resultsBox.innerHTML = '';
         resultsBox.style.display = 'none';
         return;
     }
 
-    debounceTimer = setTimeout(() => {
-        fetch(`/search?q=${encodeURIComponent(query)}`)
-            .then(res => res.json())
-            .then(devices => {
-                resultsBox.innerHTML = '';
+    debounceTimer = setTimeout(async () => {
+        activeSearchController = new AbortController();
 
-                if (devices.length === 0) {
-                    resultsBox.innerHTML = '<div class="list-group-item text-muted">No results found</div>';
-                } else {
-                    devices.forEach(device => {
-                        const item = document.createElement('a');
-                        item.href = device.url;
-                        item.className = 'list-group-item list-group-item-action';
-                        const name = document.createElement('strong');
-                        name.textContent = device.name;
-                        const brand = document.createElement('span');
-                        brand.className = 'text-muted small ms-1';
-                        brand.textContent = device.brand;
-                        item.append(name, brand);
-                        resultsBox.appendChild(item);
-                    });
+        resultsBox.innerHTML = '<div class="list-group-item text-muted">Searching...</div>';
+        resultsBox.style.display = 'block';
+
+        try {
+            const response = await fetch(`${searchUrl}?q=${encodeURIComponent(query)}`, {
+                headers: { 'Accept': 'application/json' },
+                signal: activeSearchController.signal,
+            });
+
+            if (!response.ok) {
+                throw new Error(`Search request failed with status ${response.status}`);
+            }
+
+            const devices = await response.json();
+
+            if (searchBox.value.trim() !== query) {
+                return;
+            }
+
+            resultsBox.innerHTML = '';
+
+            if (devices.length === 0) {
+                resultsBox.innerHTML = '<div class="list-group-item text-muted">No results found</div>';
+                return;
+            }
+
+            devices.forEach(device => {
+                const item = document.createElement('a');
+                item.href = device.url;
+                item.className = 'list-group-item list-group-item-action';
+
+                const row = document.createElement('div');
+                row.className = 'd-flex align-items-center gap-2';
+
+                if (device.image) {
+                    const image = document.createElement('img');
+                    image.src = device.image;
+                    image.alt = device.name;
+                    image.width = 40;
+                    image.height = 40;
+                    image.loading = 'lazy';
+                    image.style.cssText = 'width:40px;height:40px;object-fit:contain;border-radius:4px;flex:0 0 40px;';
+                    row.appendChild(image);
                 }
 
-                resultsBox.style.display = 'block';
+                const text = document.createElement('div');
+                text.className = 'min-w-0';
+
+                const name = document.createElement('div');
+                name.className = 'fw-semibold small text-truncate';
+                name.textContent = device.name;
+
+                const brand = document.createElement('div');
+                brand.className = 'text-muted small text-truncate';
+                brand.textContent = device.brand || '';
+
+                text.append(name, brand);
+                row.appendChild(text);
+                item.appendChild(row);
+                resultsBox.appendChild(item);
             });
-    }, 300);
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                return;
+            }
+
+            resultsBox.innerHTML = '<div class="list-group-item text-muted">Unable to search right now.</div>';
+        }
+    }, 250);
 });
 
 document.addEventListener('click', function (e) {
