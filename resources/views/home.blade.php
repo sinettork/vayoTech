@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'PhoneSpecs - Compare Phones & Read the Latest Tech News')
-@section('meta_description', 'Compare smartphone specifications, browse the latest devices, and read mobile technology news.')
+@section('title', 'VayoTech - Compare Phones & Read the Latest Tech News')
+@section('meta_description', 'Compare smartphone specifications, browse the latest devices, explore phone brands, and read mobile technology news.')
 @section('canonical', route('home'))
 
 @section('content')
@@ -10,7 +10,7 @@
     <aside class="col-lg-3 mb-4">
         <div class="card content-card mb-3">
             <div class="card-header bg-dark text-white">
-                <strong class="sidebar-title">Phone Finder</strong>
+                <strong class="sidebar-title">Phone finder</strong>
             </div>
             <div class="list-group list-group-flush">
                 @foreach ($brands as $brand)
@@ -41,14 +41,14 @@
                 @endforeach
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('devices.index') }}" class="btn btn-sm btn-outline-dark">All Brands</a>
+                <a href="{{ route('brands.index') }}" class="btn btn-sm btn-outline-dark">Explore all brands</a>
             </div>
         </div>
 
         @if ($comingSoon->isNotEmpty())
             <div class="card content-card mb-3">
                 <div class="card-header bg-primary text-white">
-                    <strong class="sidebar-title">Coming Soon</strong>
+                    <strong class="sidebar-title">Coming soon</strong>
                 </div>
                 <div class="list-group list-group-flush">
                     @foreach ($comingSoon as $device)
@@ -81,8 +81,8 @@
     <section class="col-lg-9">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
-                <span class="text-primary small fw-semibold text-uppercase">Fresh arrivals</span>
-                <h1 class="h2 mb-0">Latest Devices</h1>
+                <span class="text-primary small fw-semibold">Fresh arrivals</span>
+                <h1 class="h2 mb-0">Latest devices</h1>
             </div>
             <a href="{{ route('devices.index') }}" class="btn btn-outline-primary btn-sm">Browse all</a>
         </div>
@@ -95,8 +95,25 @@
             @endforeach
         </div>
 
+        <section class="mb-5">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <span class="text-primary small fw-semibold">Browse by manufacturer</span>
+                    <h2 class="h3 mb-1">Explore brands</h2>
+                    <p class="text-muted mb-0">Find phones by brand and discover the full device lineup.</p>
+                </div>
+                <a href="{{ route('brands.index') }}" class="btn btn-outline-primary btn-sm">View all</a>
+            </div>
+
+            <div class="brand-card-grid">
+                @foreach ($brands->take(8) as $brand)
+                    <x-brand-card :brand="$brand" />
+                @endforeach
+            </div>
+        </section>
+
         <div class="d-flex align-items-center justify-content-between mb-3">
-            <h2 class="h3 mb-0">Latest News</h2>
+            <h2 class="h3 mb-0">Latest news</h2>
             <a href="{{ route('news.index') }}" class="btn btn-outline-secondary btn-sm">All news</a>
         </div>
 
