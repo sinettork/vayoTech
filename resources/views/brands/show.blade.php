@@ -5,6 +5,9 @@
 @section('canonical', route('brands.show', $brand))
 
 @section('content')
+
+@section('hide_phone_finder')
+@endsection
 <div class="brand-directory-page">
     <div class="brand-directory-layout">
         <aside class="brand-directory-sidebar" aria-label="Brand navigation">
