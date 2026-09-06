@@ -8,33 +8,61 @@
 <div class="brand-directory-page">
     <div class="brand-directory-layout">
         <aside class="brand-directory-sidebar" aria-label="Brand navigation">
-            <section class="brand-navigation-panel">
-                <div class="brand-sidebar-heading">
-                    <div class="small text-muted mb-1">Explore brands</div>
-                    <h2 class="h6 mb-0">Phone brands</h2>
+            <div class="card content-card mb-3">
+                <div class="card-header bg-dark text-white">
+                    <strong class="sidebar-title">Phone finder</strong>
                 </div>
 
-                <div class="brand-grid">
+                <div class="list-group list-group-flush phone-finder-list">
                     @foreach ($brands as $navBrand)
                         <a
                             href="{{ route('brands.show', $navBrand) }}"
-                            class="brand-grid-item {{ $navBrand->is($brand) ? 'active' : '' }}"
-                            aria-current="{{ $navBrand->is($brand) ? 'page' : 'false' }}"
+                            class="list-group-item list-group-item-action {{ $navBrand->is($brand) ? 'active' : '' }}"
+                            @if($navBrand->is($brand)) aria-current="page" @endif
                         >
-                            <span class="brand-grid-logo">
+                            <div class="d-flex align-items-center gap-2">
                                 @if($navBrand->brandfetch_logo_url)
-                                    <img src="{{ $navBrand->brandfetch_logo_url }}" alt="{{ $navBrand->name }}" loading="lazy">
+                                    <img
+                                        src="{{ $navBrand->brandfetch_logo_url }}"
+                                        alt="{{ $navBrand->name }}"
+                                        width="28"
+                                        height="28"
+                                        loading="lazy"
+                                        class="phone-brand-logo"
+                                    >
                                 @elseif($navBrand->logo)
-                                    <img src="{{ asset('storage/' . $navBrand->logo) }}" alt="{{ $navBrand->name }}" loading="lazy">
+                                    <img
+                                        src="{{ asset('storage/' . $navBrand->logo) }}"
+                                        alt="{{ $navBrand->name }}"
+                                        width="28"
+                                        height="28"
+                                        loading="lazy"
+                                        class="phone-brand-logo"
+                                    >
                                 @else
-                                    <span>{{ substr($navBrand->name, 0, 1) }}</span>
+                                    <span
+                                        class="phone-brand-logo d-inline-flex align-items-center justify-content-center bg-light border"
+                                        style="width:28px;height:28px;font-size:.75rem;"
+                                    >
+                                        {{ mb_strtoupper(mb_substr($navBrand->name, 0, 1)) }}
+                                    </span>
                                 @endif
-                            </span>
-                            <span class="brand-grid-name">{{ $navBrand->name }}</span>
+
+                                <span>{{ $navBrand->name }}</span>
+                            </div>
                         </a>
                     @endforeach
                 </div>
-            </section>
+
+                <div class="card-footer text-center">
+                    <a
+                        href="{{ route('brands.index') }}"
+                        class="btn btn-sm btn-outline-dark"
+                    >
+                        Explore all brands
+                    </a>
+                </div>
+            </div>
 
             @if ($editorialPost)
                 <section class="brand-editorial-panel">
@@ -53,9 +81,11 @@
                         @else
                             <div class="brand-editorial-fallback"></div>
                         @endif
+
                         <div class="brand-editorial-overlay">
                             <span class="brand-editorial-kicker">{{ $brand->name }}</span>
                             <h3>{{ $editorialPost->title }}</h3>
+
                             @if ($editorialPost->published_at)
                                 <time datetime="{{ $editorialPost->published_at->toIso8601String() }}">
                                     {{ $editorialPost->published_at->format('M j, Y') }}
