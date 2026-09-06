@@ -79,7 +79,21 @@
     </header>
 
     <main class="container page-shell my-4">
-        @yield('content')
+
+        @hasSection('hide_phone_finder')
+            @yield('content')
+        @else
+            <div class="public-layout">
+                <aside class="public-sidebar">
+                    @include('partials.phone-finder')
+                </aside>
+
+                <section class="public-main">
+                    @yield('content')
+                </section>
+            </div>
+        @endif
+
     </main>
 
     <footer class="bg-light text-center py-3 mt-5">
