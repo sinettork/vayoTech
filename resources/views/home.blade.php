@@ -5,6 +5,10 @@
 @section('canonical', route('home'))
 
 @section('content')
+@section('hide_phone_finder')
+@endsection
+
+
 
 <div class="row g-3">
     <aside class="col-lg-3 mb-4">
