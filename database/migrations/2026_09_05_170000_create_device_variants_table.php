@@ -8,12 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
+        /*
+         * MySQL can leave a newly-created table behind when a later DDL
+         * statement fails. This migration is safe to retry in that state.
+         */
+        if (Schema::hasTable('device_variants')) {
+            Schema::drop('device_variants');
+        }
+
         Schema::create('device_variants', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('device_id')->constrained()->cascadeOnDelete();
 
-            // Bounded lengths keep the composite unique index below
-            // MySQL's 3072-byte utf8mb4 index limit.
+            // Keep the composite unique key comfortably below MySQL's
+            // 3072-byte utf8mb4 index limit.
             $table->string('ram', 50);
             $table->string('storage', 50);
             $table->string('storage_type', 50)->nullable();
@@ -21,7 +29,7 @@ return new class extends Migration
             $table->string('market', 50)->nullable();
 
             $table->decimal('price', 12, 2)->nullable();
-            $table->string('currency', 3)->default('USD');
+            $table->char('currency', 3)->default('USD');
             $table->boolean('is_default')->default(false);
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
