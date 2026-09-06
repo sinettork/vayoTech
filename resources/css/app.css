@@ -213,6 +213,60 @@ body {
     white-space: nowrap;
 }
 
+
+.public-layout {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.public-sidebar {
+    min-width: 0;
+    position: sticky;
+    top: 1rem;
+}
+
+.public-main {
+    min-width: 0;
+}
+
+.phone-brand-logo {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    padding: 3px;
+    object-fit: contain;
+    background: #fff;
+    border: 1px solid #e9ecef;
+}
+
+.phone-finder-list .list-group-item.active {
+    color: #0d6efd;
+    background: #f8f9fa;
+    border-color: var(--phonespecs-border);
+}
+
+@media (max-width: 991.98px) {
+    .public-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .public-sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .public-layout {
+        display: block;
+    }
+
+    .public-sidebar {
+        margin-bottom: 1rem;
+    }
+}
+
 /*
 |--------------------------------------------------------------------------
 | Admin
