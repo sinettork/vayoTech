@@ -8,21 +8,29 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('device_variants', function (Blueprint $table) {
+        Schema::create('device_variants', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('device_id')->constrained()->cascadeOnDelete();
-            $table->string('ram');
-            $table->string('storage');
-            $table->string('storage_type')->nullable();
-            $table->string('model_code')->nullable();
-            $table->string('market')->nullable();
+
+            // Bounded lengths keep the composite unique index below
+            // MySQL's 3072-byte utf8mb4 index limit.
+            $table->string('ram', 50);
+            $table->string('storage', 50);
+            $table->string('storage_type', 50)->nullable();
+            $table->string('model_code', 100)->nullable();
+            $table->string('market', 50)->nullable();
+
             $table->decimal('price', 12, 2)->nullable();
             $table->string('currency', 3)->default('USD');
             $table->boolean('is_default')->default(false);
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
 
-            $table->unique(['device_id', 'ram', 'storage', 'model_code', 'market'], 'device_variant_unique');
+            $table->unique(
+                ['device_id', 'ram', 'storage', 'model_code', 'market'],
+                'device_variant_unique'
+            );
+
             $table->index(['device_id', 'sort_order']);
         });
     }
