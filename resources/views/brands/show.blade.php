@@ -4,10 +4,11 @@
 @section('meta_description', 'Browse ' . $brand->name . ' phones with specifications, release dates, comparisons, and the latest device information.')
 @section('canonical', route('brands.show', $brand))
 
-@section('content')
-
 @section('hide_phone_finder')
 @endsection
+
+@section('content')
+
 <div class="brand-directory-page">
     <div class="brand-directory-layout">
         <aside class="brand-directory-sidebar" aria-label="Brand navigation">
