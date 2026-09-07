@@ -55,25 +55,62 @@
     </div>
 
     <div class="card-footer">
-        <div class="row g-2" aria-label="Explore phone brands">
-            <div class="col-6">
-                <a
-                    href="{{ route('brands.index') }}"
-                    class="btn btn-sm btn-outline-dark w-100"
-                >
-                    All Brand
-                </a>
-            </div>
-            <div class="col-6">
-                <a
-                    href="{{ route('brands.index', ['filter' => 'rumored']) }}"
-                    class="btn btn-sm btn-outline-dark w-100"
-                >
-                    Rumored
-                </a>
-            </div>
+        <div class="phone-finder-brand-buttons" aria-label="Explore phone brands">
+            <a
+                href="{{ route('brands.index') }}"
+                class="phone-finder-brand-button {{ request()->routeIs('brands.index') && request('filter', 'all') === 'all' ? 'is-active' : '' }}"
+                @if(request()->routeIs('brands.index') && request('filter', 'all') === 'all') aria-current="page" @endif
+            >
+                All Brand
+            </a>
+            <a
+                href="{{ route('brands.index', ['filter' => 'rumored']) }}"
+                class="phone-finder-brand-button {{ request()->routeIs('brands.index') && request('filter') === 'rumored' ? 'is-active' : '' }}"
+                @if(request()->routeIs('brands.index') && request('filter') === 'rumored') aria-current="page" @endif
+            >
+                Rumored
+            </a>
         </div>
     </div>
 </div>
 
 @yield('sidebar_extra')
+
+@push('styles')
+<style>
+    .phone-finder-brand-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .phone-finder-brand-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        padding: 6px 10px;
+        background: #fff;
+        border: 1px solid var(--phonespecs-border, #dee2e6);
+        border-radius: 0;
+        color: #212529;
+        font-size: .875rem;
+        line-height: 1.2;
+        text-decoration: none;
+        transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+    }
+
+    .phone-finder-brand-button:hover {
+        background: #f8f9fa;
+        border-color: #adb5bd;
+        color: #212529;
+    }
+
+    .phone-finder-brand-button.is-active {
+        background: #f8f9fa;
+        border-color: #6c757d;
+        color: #212529;
+        font-weight: 500;
+    }
+</style>
+@endpush
