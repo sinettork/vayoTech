@@ -6,9 +6,9 @@ use App\Models\Brand;
 use App\Models\Device;
 use App\Models\DeviceSpec;
 use App\Models\SpecDefinition;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 use Tests\TestCase;
 
 class AdminDeviceSpecificationTest extends TestCase
@@ -24,18 +24,13 @@ class AdminDeviceSpecificationTest extends TestCase
             'is_admin' => true,
         ]);
 
-        $brand = Brand::query()->create([
-            'name' => 'Acme',
-            'slug' => 'acme',
-        ]);
-
+        $brand = Brand::query()->create(['name' => 'Acme', 'slug' => 'acme']);
         $device = Device::query()->create([
             'brand_id' => $brand->id,
             'name' => 'Acme One',
             'slug' => 'acme-one',
             'status' => 'available',
         ]);
-
         $definition = SpecDefinition::query()->where('key', 'display_size')->firstOrFail();
 
         DeviceSpec::query()->create([
@@ -55,10 +50,7 @@ class AdminDeviceSpecificationTest extends TestCase
                 'slug' => 'acme-one',
                 'status' => 'available',
                 'specs' => [
-                    [
-                        'definition_id' => $definition->id,
-                        'spec_value' => '6.3 inches',
-                    ],
+                    ['definition_id' => $definition->id, 'spec_value' => '6.3 inches'],
                 ],
             ])
             ->assertRedirect(route('admin.devices.index'));
@@ -78,7 +70,7 @@ class AdminDeviceSpecificationTest extends TestCase
     {
         $user = User::query()->create([
             'name' => 'Admin',
-            'email' => 'admin@example.com',
+            'email' => 'admin-duplicate@example.com',
             'password' => Hash::make('password'),
             'is_admin' => true,
         ]);
@@ -104,6 +96,6 @@ class AdminDeviceSpecificationTest extends TestCase
                     ['definition_id' => $definition->id, 'spec_value' => '12 GB'],
                 ],
             ])
-            ->assertSessionHasErrors('specs');
+            ->assertSessionHasErrors('specs.1.definition_id');
     }
 }
