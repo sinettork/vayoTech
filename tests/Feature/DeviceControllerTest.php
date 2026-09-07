@@ -36,7 +36,7 @@ class DeviceControllerTest extends TestCase
         $this->get(route('devices.show', $device))
             ->assertSeeText('Acme One')
             ->assertSeeText('Acme')
-            ->assertSeeText('Released Sep 2026')
+            ->assertSeeText('Released September 2026')
             ->assertSeeText('Display')
             ->assertSeeText('6.1 inches')
             ->assertSee('rel="canonical" href="'.route('devices.show', $device).'"', false)
