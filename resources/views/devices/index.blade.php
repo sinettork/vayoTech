@@ -46,19 +46,7 @@
 <div class="row g-2">
     @forelse ($devices as $device)
         <div class="col-6 col-md-4 col-xl-3">
-            <div class="card device-card h-100">
-                @if ($device->image)
-                    <img src="{{ asset('storage/' . $device->image) }}" class="device-image" alt="{{ $device->name }}" loading="lazy">
-                @else
-                    <div class="device-image"><span class="text-muted small">No image</span></div>
-                @endif
-                <div class="card-body">
-                    <h5 class="card-title">{{ $device->name }}</h5>
-                    <p class="text-muted small mb-2">{{ $device->brand->name }} @if ($device->release_date) &middot; {{ $device->release_date->format('M Y') }} @endif</p>
-                    <span class="badge text-bg-light border mb-3">{{ ucfirst($device->status) }}</span>
-                    <a href="{{ route('devices.show', $device) }}" class="btn btn-primary btn-sm">View Specs</a>
-                </div>
-            </div>
+            @include('partials.device-card', ['device' => $device])
         </div>
     @empty
         <div class="col-12"><div class="alert alert-info mb-4">No devices match these filters.</div></div>
