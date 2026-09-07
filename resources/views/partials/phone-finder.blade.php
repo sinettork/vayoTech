@@ -61,7 +61,6 @@
                     href="{{ route('brands.index') }}"
                     class="btn btn-sm btn-outline-dark w-100"
                 >
-                    <i class="fa-solid fa-layer-group me-1" aria-hidden="true"></i>
                     All Brand
                 </a>
             </div>
@@ -70,7 +69,6 @@
                     href="{{ route('brands.index', ['filter' => 'rumored']) }}"
                     class="btn btn-sm btn-outline-dark w-100"
                 >
-                    <i class="fa-solid fa-clock-rotate-left me-1" aria-hidden="true"></i>
                     Rumored
                 </a>
             </div>
