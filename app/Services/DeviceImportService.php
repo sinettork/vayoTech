@@ -143,7 +143,6 @@ class DeviceImportService
                     'status' => $status,
                     'image' => $this->nullableString($row['image'] ?? null) ?: $device->image,
                 ]);
-                $device->specs()->delete();
             }
 
             $device->dataSourceLinks()->updateOrCreate(
@@ -168,24 +167,58 @@ class DeviceImportService
                     : null;
                 $specValue = trim((string) $value);
 
-                $spec = $device->specs()->create([
-                    'spec_definition_id' => $definition?->id,
-                    'category' => $definition?->category ?? $this->specCategory($rawKey),
-                    'spec_key' => $definition?->label ?? Str::headline($rawKey),
-                    'spec_value' => $specValue,
-                    'numeric_value' => $definition && in_array($definition->value_type, ['integer', 'decimal'], true)
-                        ? $this->numericValue($specValue) : null,
-                    'boolean_value' => $definition && $definition->value_type === 'boolean'
-                        ? $this->booleanValue($specValue) : null,
-                    'sort_order' => $sortOrder++,
-                ]);
+                $spec = null;
+                if ($definition) {
+                    $spec = $device->specs()->where('spec_definition_id', $definition->id)->first();
+                }
 
-                $spec->sources()->create([
-                    'data_source_id' => $dataSource->id,
-                    'source_value' => $specValue,
-                    'source_url' => $this->nullableString($row['source_url'] ?? null),
-                    'verification_status' => 'unverified',
-                ]);
+                if ($spec) {
+                    $valueChanged = $spec->spec_value !== $specValue;
+                    $spec->update([
+                        'category' => $definition->category,
+                        'spec_key' => $definition->label,
+                        'spec_value' => $specValue,
+                        'numeric_value' => in_array($definition->value_type, ['integer', 'decimal'], true)
+                            ? $this->numericValue($specValue) : null,
+                        'boolean_value' => $definition->value_type === 'boolean'
+                            ? $this->booleanValue($specValue) : null,
+                        'sort_order' => $sortOrder++,
+                    ]);
+                } else {
+                    $spec = $device->specs()->create([
+                        'spec_definition_id' => $definition?->id,
+                        'category' => $definition?->category ?? $this->specCategory($rawKey),
+                        'spec_key' => $definition?->label ?? Str::headline($rawKey),
+                        'spec_value' => $specValue,
+                        'numeric_value' => $definition && in_array($definition->value_type, ['integer', 'decimal'], true)
+                            ? $this->numericValue($specValue) : null,
+                        'boolean_value' => $definition && $definition->value_type === 'boolean'
+                            ? $this->booleanValue($specValue) : null,
+                        'sort_order' => $sortOrder++,
+                    ]);
+                    $valueChanged = true;
+                }
+
+                $source = $spec->sources()->where('data_source_id', $dataSource->id)->latest('id')->first();
+                if (!$source) {
+                    $spec->sources()->create([
+                        'data_source_id' => $dataSource->id,
+                        'source_value' => $specValue,
+                        'source_url' => $this->nullableString($row['source_url'] ?? null),
+                        'verification_status' => 'unverified',
+                    ]);
+                } elseif ($valueChanged && $source->source_value !== $specValue) {
+                    $source->update([
+                        'source_value' => $specValue,
+                        'source_url' => $this->nullableString($row['source_url'] ?? null),
+                        'verification_status' => 'unverified',
+                        'verified_by' => null,
+                        'verified_at' => null,
+                        'review_note' => null,
+                    ]);
+                } elseif ($source->source_url !== $this->nullableString($row['source_url'] ?? null)) {
+                    $source->update(['source_url' => $this->nullableString($row['source_url'] ?? null)]);
+                }
             }
         });
     }
