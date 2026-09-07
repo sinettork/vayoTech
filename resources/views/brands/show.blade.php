@@ -151,7 +151,6 @@
 
     </main>
 </div>
-</div>
 @endsection
 
 @push('styles')
