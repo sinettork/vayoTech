@@ -8,14 +8,13 @@
             </div>
         @endif
         <div class="card-body p-2 text-center">
-            <h3 class="h6 card-title mb-1">{{ $device->name }}</h3>
-            <p class="text-muted small mb-1">
+            <h3 class="h6 card-title mb-1">
+                <i class="fa-solid fa-mobile-screen-button me-1" aria-hidden="true"></i>{{ $device->name }}
+            </h3>
+            <p class="text-muted small mb-0">
                 {{ $device->brand->name ?? '' }}
                 @if ($device->release_date) &middot; {{ $device->release_date->format('M Y') }} @endif
             </p>
-            @if ($device->status === 'rumored')
-                <span class="badge text-bg-warning">Coming soon</span>
-            @endif
         </div>
     </a>
 </div>
