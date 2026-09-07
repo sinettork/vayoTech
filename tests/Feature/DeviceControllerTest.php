@@ -40,6 +40,6 @@ class DeviceControllerTest extends TestCase
             ->assertSeeText('Display')
             ->assertSeeText('6.1 inches')
             ->assertSee('rel="canonical" href="'.route('devices.show', $device).'"', false)
-            ->assertSee('"@type":"Product"', false);
+            ->assertSee('"@type": "Product"', false);
     }
 }
