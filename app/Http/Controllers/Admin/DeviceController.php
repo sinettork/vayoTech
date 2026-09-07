@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Device;
+use App\Models\SpecDefinition;
+use App\Services\DeviceSpecSyncService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -45,32 +47,34 @@ class DeviceController extends Controller
     {
         return view('admin.devices.create', [
             'brands' => Brand::orderBy('name')->get(),
+            'specDefinitions' => $this->activeSpecDefinitions(),
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, DeviceSpecSyncService $specSync): RedirectResponse
     {
         $data = $this->validateDevice($request);
         $data['slug'] = $data['slug'] ?: $this->uniqueSlug($data['name'], $data['brand_id']);
         $data['image'] = $this->storeImage($request);
 
         $device = Device::create($data);
-        $this->syncSpecs($device, $request->input('specs', []));
+        $specSync->sync($device, $request->input('specs', []));
 
         return redirect()->route('admin.devices.index')->with('success', 'Device created successfully.');
     }
 
     public function edit(Device $device): View
     {
-        $device->load(['brand', 'specs' => fn ($query) => $query->orderBy('sort_order')]);
+        $device->load(['brand', 'specs' => fn ($query) => $query->orderBy('sort_order')->with('definition')]);
 
         return view('admin.devices.edit', [
             'device' => $device,
             'brands' => Brand::orderBy('name')->get(),
+            'specDefinitions' => $this->activeSpecDefinitions(),
         ]);
     }
 
-    public function update(Request $request, Device $device): RedirectResponse
+    public function update(Request $request, Device $device, DeviceSpecSyncService $specSync): RedirectResponse
     {
         $data = $this->validateDevice($request, $device->id);
         $data['slug'] = $data['slug'] ?: $device->slug;
@@ -83,7 +87,7 @@ class DeviceController extends Controller
         }
 
         $device->update($data);
-        $this->syncSpecs($device, $request->input('specs', []));
+        $specSync->sync($device, $request->input('specs', []));
 
         return redirect()->route('admin.devices.index')->with('success', 'Device updated successfully.');
     }
@@ -114,10 +118,19 @@ class DeviceController extends Controller
             'status' => ['required', 'in:rumored,available,discontinued'],
             'image' => ['nullable', 'image', 'max:2048'],
             'specs' => ['nullable', 'array'],
-            'specs.*.category' => ['required', 'string', 'max:100'],
-            'specs.*.spec_key' => ['required', 'string', 'max:255'],
+            'specs.*.definition_id' => ['required', 'integer', 'exists:spec_definitions,id'],
             'specs.*.spec_value' => ['required', 'string', 'max:500'],
         ]);
+    }
+
+    private function activeSpecDefinitions()
+    {
+        return SpecDefinition::query()
+            ->where('active', true)
+            ->orderBy('category')
+            ->orderBy('sort_order')
+            ->orderBy('label')
+            ->get();
     }
 
     private function uniqueSlug(string $name, int $brandId): string
@@ -139,19 +152,5 @@ class DeviceController extends Controller
         return $request->hasFile('image')
             ? $request->file('image')->store('devices', 'public')
             : null;
-    }
-
-    private function syncSpecs(Device $device, array $specs): void
-    {
-        $device->specs()->delete();
-
-        foreach (array_values($specs) as $index => $spec) {
-            $device->specs()->create([
-                'category' => $spec['category'],
-                'spec_key' => $spec['spec_key'],
-                'spec_value' => $spec['spec_value'],
-                'sort_order' => $index + 1,
-            ]);
-        }
     }
 }
