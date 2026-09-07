@@ -99,45 +99,6 @@
             @endforeach
         </div>
 
-        <section class="mb-5">
-            <div class="card content-card">
-                <div class="card-header bg-dark text-white">
-                    <strong class="sidebar-title">Explore brands</strong>
-                </div>
-                <div class="list-group list-group-flush phone-finder-list">
-                    @foreach ($brands as $brand)
-                        <a href="{{ route('brands.show', $brand) }}" class="list-group-item list-group-item-action">
-                            <div class="d-flex align-items-center gap-2">
-                                @if($brand->brandfetch_logo_url)
-                                    <img
-                                        src="{{ $brand->brandfetch_logo_url }}"
-                                        alt="{{ $brand->name }}"
-                                        width="28"
-                                        height="28"
-                                        loading="lazy"
-                                        class="phone-brand-logo"
-                                    >
-                                @elseif($brand->logo)
-                                    <img
-                                        src="{{ asset('storage/' . $brand->logo) }}"
-                                        alt="{{ $brand->name }}"
-                                        width="28"
-                                        height="28"
-                                        loading="lazy"
-                                        class="phone-brand-logo"
-                                    >
-                                @endif
-                                <span>{{ $brand->name }}</span>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-                <div class="card-footer text-center">
-                    <a href="{{ route('brands.index') }}" class="btn btn-sm btn-outline-dark">Explore all brands</a>
-                </div>
-            </div>
-        </section>
-
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h2 class="h3 mb-0">Latest news</h2>
             <a href="{{ route('news.index') }}" class="btn btn-outline-secondary btn-sm">All news</a>
