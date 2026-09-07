@@ -4,11 +4,7 @@
 @section('meta_description', 'Compare smartphone specifications, browse the latest devices, explore phone brands, and read mobile technology news.')
 @section('canonical', route('home'))
 
-@section('hide_phone_finder')
-@endsection
-
 @section('content')
-
 
 <div class="row g-3">
     <aside class="col-lg-3 mb-4">
