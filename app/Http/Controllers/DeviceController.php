@@ -87,22 +87,28 @@ class DeviceController extends Controller
 
         $groupedSpecs = $device->specs->groupBy('category');
 
-        $findSpec = function (string $key) use ($device): ?string {
-            $spec = $device->specs->first(
-                fn ($item) => strcasecmp(
-                    trim((string) $item->spec_key),
-                    $key
-                ) === 0
-            );
+        $findSpec = function (array $keys) use ($device): ?string {
+            foreach ($keys as $key) {
+                $spec = $device->specs->first(
+                    fn ($item) => strcasecmp(
+                        trim((string) $item->spec_key),
+                        $key
+                    ) === 0
+                );
 
-            return $spec?->spec_value;
+                if ($spec?->spec_value) {
+                    return $spec->spec_value;
+                }
+            }
+
+            return null;
         };
 
         $quickSpecs = [
-            'screen' => $findSpec('Screen Size'),
-            'camera' => $findSpec('Main Camera'),
-            'ram' => $findSpec('RAM'),
-            'battery' => $findSpec('Capacity'),
+            'screen' => $findSpec(['Screen Size', 'Display Size', 'Display']),
+            'camera' => $findSpec(['Main Camera', 'Main camera setup', 'Camera']),
+            'ram' => $findSpec(['RAM', 'Memory']),
+            'battery' => $findSpec(['Capacity', 'Battery Capacity', 'Battery capacity']),
         ];
 
         return view('devices.show', compact(
