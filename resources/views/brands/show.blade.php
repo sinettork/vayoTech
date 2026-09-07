@@ -4,109 +4,11 @@
 @section('meta_description', 'Browse ' . $brand->name . ' phones with specifications, release dates, comparisons, and the latest device information.')
 @section('canonical', route('brands.show', $brand))
 
-@section('hide_phone_finder')
-@endsection
-
 @section('content')
 
 <div class="brand-directory-page">
-    <div class="brand-directory-layout">
-        <aside class="brand-directory-sidebar" aria-label="Brand navigation">
-            <div class="card content-card mb-3">
-                <div class="card-header bg-dark text-white">
-                    <strong class="sidebar-title">Phone finder</strong>
-                </div>
+    <main class="brand-directory-main">
 
-                <div class="list-group list-group-flush phone-finder-list">
-                    @foreach ($brands as $navBrand)
-                        <a
-                            href="{{ route('brands.show', $navBrand) }}"
-                            class="list-group-item list-group-item-action {{ $navBrand->is($brand) ? 'active' : '' }}"
-                            @if($navBrand->is($brand)) aria-current="page" @endif
-                        >
-                            <div class="d-flex align-items-center gap-2">
-                                @if($navBrand->brandfetch_logo_url)
-                                    <img
-                                        src="{{ $navBrand->brandfetch_logo_url }}"
-                                        alt="{{ $navBrand->name }}"
-                                        width="28"
-                                        height="28"
-                                        loading="lazy"
-                                        class="phone-brand-logo"
-                                    >
-                                @elseif($navBrand->logo)
-                                    <img
-                                        src="{{ asset('storage/' . $navBrand->logo) }}"
-                                        alt="{{ $navBrand->name }}"
-                                        width="28"
-                                        height="28"
-                                        loading="lazy"
-                                        class="phone-brand-logo"
-                                    >
-                                @else
-                                    <span
-                                        class="phone-brand-logo d-inline-flex align-items-center justify-content-center bg-light border"
-                                        style="width:28px;height:28px;font-size:.75rem;"
-                                    >
-                                        {{ mb_strtoupper(mb_substr($navBrand->name, 0, 1)) }}
-                                    </span>
-                                @endif
-
-                                <span>{{ $navBrand->name }}</span>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-
-                <div class="card-footer text-center">
-                    <a
-                        href="{{ route('brands.index') }}"
-                        class="btn btn-sm btn-outline-dark"
-                    >
-                        Explore all brands
-                    </a>
-                </div>
-            </div>
-
-            @if ($editorialPost)
-                <section class="brand-editorial-panel">
-                    <div class="brand-sidebar-heading">
-                        <div class="small text-muted mb-1">Latest editorial</div>
-                        <h2 class="h6 mb-0">{{ $brand->name }} news</h2>
-                    </div>
-
-                    <a href="{{ route('news.show', $editorialPost) }}" class="brand-editorial-card">
-                        @if ($editorialPost->image)
-                            <img
-                                src="{{ asset('storage/' . $editorialPost->image) }}"
-                                alt="{{ $editorialPost->title }}"
-                                loading="lazy"
-                            >
-                        @else
-                            <div class="brand-editorial-fallback"></div>
-                        @endif
-
-                        <div class="brand-editorial-overlay">
-                            <span class="brand-editorial-kicker">{{ $brand->name }}</span>
-                            <h3>{{ $editorialPost->title }}</h3>
-
-                            @if ($editorialPost->published_at)
-                                <time datetime="{{ $editorialPost->published_at->toIso8601String() }}">
-                                    {{ $editorialPost->published_at->format('M j, Y') }}
-                                </time>
-                            @endif
-                        </div>
-                    </a>
-                </section>
-            @endif
-
-            <div class="brand-sidebar-summary">
-                <strong>{{ $deviceCount }}</strong>
-                <span>{{ Str::plural('device', $deviceCount) }} in the catalog</span>
-            </div>
-        </aside>
-
-        <main class="brand-directory-main">
             <header
                 class="brand-hero-banner"
                 style="@if($heroDevice && $heroDevice->image) background-image: linear-gradient(90deg, rgba(15, 23, 42, .90) 0%, rgba(15, 23, 42, .62) 48%, rgba(15, 23, 42, .12) 100%), url('{{ asset('storage/' . $heroDevice->image) }}'); @endif"
@@ -246,8 +148,9 @@
                     </div>
                 @endif
             </section>
-        </main>
-    </div>
+
+    </main>
+</div>
 </div>
 @endsection
 
