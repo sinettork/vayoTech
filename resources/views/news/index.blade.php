@@ -5,14 +5,22 @@
 @section('canonical', route('news.index'))
 
 @section('content')
-<div class="mb-4">
-    <span class="text-primary small fw-semibold text-uppercase">From the mobile world</span>
+<div class="mb-3">
+    <span class="text-primary small fw-semibold">FROM THE MOBILE WORLD</span>
     <h1 class="mb-1">Latest News</h1>
     <p class="text-muted mb-0">Launches, updates, and useful context for the phones you follow.</p>
 </div>
 
+<form method="GET" action="{{ route('news.index') }}" class="card content-card card-body mb-4">
+    <div class="d-flex gap-2">
+        <label class="visually-hidden" for="news-search">Search news</label>
+        <input id="news-search" class="form-control" type="search" name="q" value="{{ $search }}" placeholder="Search news...">
+        <button class="btn btn-dark" type="submit">Search</button>
+    </div>
+</form>
+
 <div class="row g-3">
-@foreach ($posts as $post)
+@forelse ($posts as $post)
     <div class="col-md-6">
         <article class="card article-card h-100">
             @if ($post->image)
@@ -26,7 +34,9 @@
             <div class="card-footer bg-white border-0 pt-0"><a href="{{ route('news.show', $post) }}" class="small">Read story</a></div>
         </div>
     </div>
-@endforeach
+@empty
+    <div class="col-12"><div class="alert alert-light border mb-0">No news stories match your search.</div></div>
+@endforelse
 </div>
 
 <div class="mt-4">{{ $posts->links() }}</div>

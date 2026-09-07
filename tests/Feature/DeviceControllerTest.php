@@ -33,13 +33,22 @@ class DeviceControllerTest extends TestCase
             'spec_value' => '6.1 inches',
         ]);
 
+        Device::query()->create([
+            'brand_id' => $brand->id,
+            'name' => 'Acme Two',
+            'slug' => 'acme-two',
+            'release_date' => '2025-09-01',
+        ]);
+
         $this->get(route('devices.show', $device))
             ->assertSeeText('Acme One')
             ->assertSeeText('Acme')
-            ->assertSeeText('Released Sep 2026')
+            ->assertSeeText('Released September 2026')
             ->assertSeeText('Display')
             ->assertSeeText('6.1 inches')
             ->assertSee('rel="canonical" href="'.route('devices.show', $device).'"', false)
-            ->assertSee('"@type":"Product"', false);
+            ->assertSee('"@type": "Product"', false)
+            ->assertSeeText('Related phones')
+            ->assertSeeText('Acme Two');
     }
 }

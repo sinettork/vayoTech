@@ -38,6 +38,23 @@
 </nav>
 
 <section class="device-spec-hero mb-3">
+    <header class="device-spec-hero-header">
+        <h1>{{ $device->name }}</h1>
+        <button
+            type="button"
+            class="device-share-button"
+            data-share-device
+            data-share-title="{{ $device->name }}"
+            data-share-url="{{ route('devices.show', $device) }}"
+            aria-label="Share {{ $device->name }}"
+        >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M18 8a3 3 0 1 0-2.83-4A3 3 0 0 0 15 5c0 .19.02.37.05.55l-6.1 3.36a3 3 0 1 0 0 6.18l6.1 3.36A3 3 0 1 0 16 16c-.03 0-.06 0-.09.01l-6.1-3.36c.12-.4.19-.82.19-1.25s-.07-.85-.19-1.25l6.1-3.36c.55.75 1.44 1.24 2.45 1.24Z" fill="currentColor"/>
+            </svg>
+            <span class="visually-hidden">Share</span>
+        </button>
+        <span class="device-share-status" data-share-status aria-live="polite"></span>
+    </header>
 
     <div class="device-spec-hero-main">
 
@@ -66,39 +83,45 @@
                 <span>{{ ucfirst($device->status) }}</span>
             </div>
 
-            <h1>{{ $device->name }}</h1>
-
-            <p class="device-spec-release">
-                @if ($device->release_date)
-                    Released {{ $device->release_date->format('F Y') }}
-                @else
-                    Release date not available
-                @endif
-            </p>
-
-            <div class="device-spec-actions">
-                <a href="{{ route('compare.index', ['devices' => $device->id]) }}" class="btn btn-dark btn-sm">
-                    Compare
-                </a>
-
-                <a href="{{ route('brands.show', $device->brand) }}" class="btn btn-outline-secondary btn-sm">
-                    More {{ $device->brand->name }} phones
-                </a>
+            <div class="device-fact-grid">
+                @foreach ([
+                    'release' => ['fa-calendar-days', 'Release', $device->release_date ? 'Released '.$device->release_date->format('F Y') : 'Date not available'],
+                    'os' => ['fa-mobile-screen-button', 'OS', $quickSpecs['os']],
+                    'storage' => ['fa-hard-drive', 'Storage', $quickSpecs['storage']],
+                    'display' => ['fa-display', 'Display', $quickSpecs['display'] ?: $quickSpecs['screen']],
+                    'chip' => ['fa-microchip', 'Chip', $quickSpecs['chip']],
+                ] as [$factIcon, $factLabel, $factValue])
+                    @if ($factValue)
+                        <div class="device-fact">
+                            <i class="fa-solid {{ $factIcon }}" aria-hidden="true"></i>
+                            <div>
+                                <span>{{ $factLabel }}</span>
+                                <strong>{{ $factValue }}</strong>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
             </div>
 
             <div class="device-key-specs">
 
                 @foreach([
-                    'screen' => 'Display',
-                    'camera' => 'Main camera',
-                    'ram' => 'RAM',
-                    'battery' => 'Battery',
+                    'screen' => ['fa-mobile-screen', 'Screen size'],
+                    'camera' => ['fa-camera', 'Camera'],
+                    'ram' => ['fa-memory', 'RAM'],
+                    'battery' => ['fa-battery-full', 'Battery'],
                 ] as $key => $label)
 
                     @if ($quickSpecs[$key])
                         <div class="device-key-spec">
-                            <span>{{ $label }}</span>
+                            <i class="fa-solid {{ $label[0] }}" aria-hidden="true"></i>
+                            <span>{{ $label[1] }}</span>
                             <strong>{{ $quickSpecs[$key] }}</strong>
+                            @if ($key === 'screen' && $quickSpecs['display'])
+                                <small>{{ $quickSpecs['display'] }}</small>
+                            @elseif ($key === 'camera' && $quickSpecs['chip'])
+                                <small>{{ $quickSpecs['chip'] }}</small>
+                            @endif
                         </div>
                     @endif
 
@@ -110,29 +133,54 @@
 
     </div>
 
+    <nav class="device-section-nav" aria-label="Device sections">
+
+        <a class="active" href="#top">
+            <i class="fa-regular fa-eye" aria-hidden="true"></i>
+            <span>HANDS-ON</span>
+        </a>
+
+        <a href="#specifications">
+            <i class="fa-regular fa-comments" aria-hidden="true"></i>
+            <span>OPINIONS</span>
+        </a>
+
+        <a href="{{ route('compare.index', ['devices' => $device->id]) }}">
+            <i class="fa-solid fa-code-compare" aria-hidden="true"></i>
+            <span>COMPARE</span>
+        </a>
+
+        <a href="#top">
+            <i class="fa-regular fa-image" aria-hidden="true"></i>
+            <span>PICTURES</span>
+        </a>
+
+        <a href="#memory">
+            <i class="fa-solid fa-dollar-sign" aria-hidden="true"></i>
+            <span>PRICES</span>
+        </a>
+
+    </nav>
 </section>
 
-<nav class="device-section-nav mb-4" aria-label="Device sections">
-
-    <a class="active" href="#specifications">
-        Specifications
-    </a>
-
-    @if ($device->variants->isNotEmpty())
-        <a href="#memory">
-            Memory
-        </a>
-    @endif
-
-    <a href="#top">
-        Overview
-    </a>
-
-    <a href="{{ route('compare.index', ['devices' => $device->id]) }}">
-        Compare
-    </a>
-
-</nav>
+@if ($relatedDevices->isNotEmpty())
+    <section class="device-data-section mb-4" aria-labelledby="related-devices-title">
+        <div class="device-section-heading mb-3">
+            <div>
+                <span>More from {{ $device->brand->name }}</span>
+                <h2 id="related-devices-title">Related phones</h2>
+            </div>
+            <a href="{{ route('brands.show', $device->brand) }}" class="small text-decoration-none">View brand</a>
+        </div>
+        <div class="row g-2">
+            @foreach ($relatedDevices as $relatedDevice)
+                <div class="col-6 col-md-3">
+                    @include('partials.device-card', ['device' => $relatedDevice])
+                </div>
+            @endforeach
+        </div>
+    </section>
+@endif
 
 
 @if ($device->variants->isNotEmpty())

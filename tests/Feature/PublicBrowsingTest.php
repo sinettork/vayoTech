@@ -42,6 +42,50 @@ class PublicBrowsingTest extends TestCase
             ->assertDontSeeText('Galaxy Rumored');
     }
 
+    public function test_device_directory_supports_search_and_status_tabs(): void
+    {
+        $brand = Brand::query()->create(['name' => 'Nokia', 'slug' => 'nokia']);
+
+        Device::query()->create([
+            'brand_id' => $brand->id,
+            'name' => 'Nokia Available',
+            'slug' => 'nokia-available',
+            'status' => 'available',
+        ]);
+        Device::query()->create([
+            'brand_id' => $brand->id,
+            'name' => 'Nokia Rumored',
+            'slug' => 'nokia-rumored',
+            'status' => 'rumored',
+        ]);
+
+        $this->get(route('devices.index', ['q' => 'Rumored']))
+            ->assertSeeText('Nokia Rumored')
+            ->assertDontSeeText('Nokia Available')
+            ->assertSeeText('All phones')
+            ->assertSeeText('Rumored');
+    }
+
+    public function test_news_index_searches_published_stories(): void
+    {
+        NewsPost::query()->create([
+            'title' => 'Foldable launch',
+            'slug' => 'foldable-launch',
+            'body' => 'A new foldable phone arrives.',
+            'published_at' => now(),
+        ]);
+        NewsPost::query()->create([
+            'title' => 'Camera update',
+            'slug' => 'camera-update',
+            'body' => 'A camera update arrives.',
+            'published_at' => now(),
+        ]);
+
+        $this->get(route('news.index', ['q' => 'foldable']))
+            ->assertSeeText('Foldable launch')
+            ->assertDontSeeText('Camera update');
+    }
+
     public function test_search_requires_two_characters_and_returns_matching_devices(): void
     {
         $brand = Brand::query()->create(['name' => 'Google', 'slug' => 'google']);
@@ -60,7 +104,7 @@ class PublicBrowsingTest extends TestCase
             ->assertJsonPath('0.brand', 'Google');
     }
 
-    public function test_comparison_uses_only_the_first_four_valid_device_ids(): void
+    public function test_comparison_uses_only_the_first_three_valid_device_ids(): void
     {
         $brand = Brand::query()->create(['name' => 'OnePlus', 'slug' => 'oneplus']);
         $devices = collect(range(1, 5))->map(function (int $number) use ($brand): Device {
@@ -83,7 +127,7 @@ class PublicBrowsingTest extends TestCase
 
         $this->get(route('compare.index', ['devices' => $devices->pluck('id')->implode(',').',invalid']))
             ->assertSeeText('OnePlus 1')
-            ->assertSeeText('OnePlus 4')
+            ->assertDontSeeText('OnePlus 4')
             ->assertDontSeeText('5.0 inches');
     }
 

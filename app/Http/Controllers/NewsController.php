@@ -3,18 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\NewsPost;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class NewsController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $posts = NewsPost::whereNotNull('published_at')
+        $query = NewsPost::whereNotNull('published_at')
             ->where('published_at', '<=', now())
-            ->orderByDesc('published_at')
-            ->paginate(10);
+            ->orderByDesc('published_at');
 
-        return view('news.index', compact('posts'));
+        $search = $request->string('q')->trim()->substr(0, 80)->toString();
+        if ($search !== '') {
+            $query->where(function ($posts) use ($search): void {
+                $posts->where('title', 'like', "%{$search}%")
+                    ->orWhere('body', 'like', "%{$search}%");
+            });
+        }
+
+        $posts = $query->paginate(10)->withQueryString();
+
+        return view('news.index', compact('posts', 'search'));
     }
 
     public function show(NewsPost $newsPost): View

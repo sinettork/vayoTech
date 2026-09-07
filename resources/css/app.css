@@ -4,18 +4,50 @@
     --phonespecs-page: #f1f3f5;
     --phonespecs-border: #e2e6ea;
     --phonespecs-muted: #6c757d;
+    --phonespecs-radius: 0;
 }
 
 html {
     min-height: 100%;
+    scroll-behavior: auto;
+    scroll-padding-top: 4.5rem;
+    overflow-y: scroll;
 }
 
 body {
+    display: flex;
+    flex-direction: column;
     min-height: 100%;
     margin: 0;
-    overflow-x: hidden;
+    min-height: 100vh;
+    overflow-x: clip;
+    overflow-y: visible;
     background: var(--phonespecs-page);
     color: #212529;
+    overscroll-behavior-x: none;
+}
+
+.page-content {
+    flex: 1 0 auto;
+    min-height: 0;
+    overflow: visible;
+    width: 100%;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+.site-footer {
+    flex-shrink: 0;
+    border-top: 1px solid var(--phonespecs-border);
+    color: #495057;
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
 }
 
 .site-header .navbar-brand {
@@ -30,6 +62,47 @@ body {
 .site-header .nav-link.active {
     border-bottom-color: #fff;
     color: #fff;
+}
+
+.site-search {
+    width: 300px;
+}
+
+.site-search .form-control {
+    border: 0;
+    min-height: 38px;
+}
+
+.site-search .list-group {
+    border-radius: var(--phonespecs-radius);
+    box-shadow: 0 6px 16px rgba(33, 37, 41, .12);
+}
+
+/* Public controls use the site's square, compact catalogue treatment. */
+.btn,
+.form-control,
+.form-select,
+.input-group-text,
+.card,
+.list-group,
+.list-group-item,
+.alert,
+.badge,
+.dropdown-menu,
+.modal-content,
+.accordion-item,
+.accordion-button {
+    border-radius: var(--phonespecs-radius) !important;
+}
+
+.rounded,
+.rounded-1,
+.rounded-2,
+.rounded-3,
+.rounded-4,
+.rounded-5,
+.rounded-pill {
+    border-radius: var(--phonespecs-radius) !important;
 }
 
 .category-bar {
@@ -48,8 +121,59 @@ body {
     color: #0d6efd;
 }
 
+.device-directory-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+}
+
+.device-directory-tabs a {
+    padding: .45rem .7rem;
+    border: 1px solid var(--phonespecs-border);
+    background: #fff;
+    color: #495057;
+    font-size: .82rem;
+    text-decoration: none;
+}
+
+.device-directory-tabs a:hover,
+.device-directory-tabs a.active {
+    border-color: #0d6efd;
+    background: #e7f1ff;
+    color: #0d6efd;
+}
+
 .page-shell {
-    max-width: 1180px;
+    max-width: 1240px;
+}
+
+.public-main > :first-child,
+.public-sidebar > :first-child {
+    margin-top: 0;
+}
+
+.public-sidebar .phone-finder-card {
+    margin-bottom: 1rem !important;
+}
+
+.phone-finder-card .card-header {
+    padding: .65rem .8rem;
+    text-align: center;
+}
+
+.phone-finder-card .list-group-item {
+    padding: .55rem .65rem;
+    text-align: left;
+}
+
+.phone-finder-card .list-group-item > div {
+    justify-content: flex-start;
+}
+
+.phone-finder-card .phone-brand-logo {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
 }
 
 .ad-placeholder {
@@ -92,6 +216,50 @@ body {
 .sidebar-title {
     font-size: .8rem;
     letter-spacing: .05em;
+}
+
+.home-section + .home-section {
+    margin-top: 2.5rem;
+}
+
+.section-heading {
+    align-items: flex-end;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.section-kicker {
+    color: #0d6efd;
+    display: block;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    margin-bottom: .25rem;
+}
+
+.section-title {
+    font-size: clamp(1.35rem, 2vw, 1.75rem);
+    font-weight: 700;
+    margin: 0;
+}
+
+.section-description {
+    color: var(--phonespecs-muted);
+    font-size: .875rem;
+    margin: .35rem 0 0;
+}
+
+.news-preview-card {
+    border-color: var(--phonespecs-border);
+    box-shadow: 0 1px 2px rgba(33, 37, 41, .04);
+}
+
+.news-preview-date {
+    color: var(--phonespecs-muted);
+    font-size: .75rem;
+    margin-bottom: .5rem;
 }
 
 .device-detail-header,
@@ -151,7 +319,7 @@ body {
 
 .quick-spec-box {
     background: rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
+    border-radius: var(--phonespecs-radius);
     padding: 10px 12px;
     text-align: center;
 }
@@ -190,17 +358,39 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.phone-finder-section-label {
+    padding: .55rem .65rem .35rem;
+    color: var(--phonespecs-muted);
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-align: center;
+}
+
+.phone-finder-list,
+.phone-finder-list .list-group-item,
+.phone-finder-list .phone-brand-logo,
+.public-sidebar .content-card,
+.phone-finder-card,
+.phone-finder-card .card-header,
+.phone-finder-card .card-body,
+.phone-finder-card .card-footer {
+    border-radius: 0 !important;
+}
+
 .phone-finder-list .list-group-item {
     min-width: 0;
+    background: #fff;
+    border-color: #edf0f2;
     border-right: 0;
 }
 
 .phone-finder-list .list-group-item:nth-child(odd) {
-    border-right: 1px solid var(--phonespecs-border);
+    border-right: 1px solid #edf0f2;
 }
 
 .phone-finder-list .list-group-item:nth-child(n + 3) {
-    border-top: 1px solid var(--phonespecs-border);
+    border-top: 1px solid #edf0f2;
 }
 
 .phone-finder-list .list-group-item > div {
@@ -213,22 +403,38 @@ body {
     white-space: nowrap;
 }
 
+.phone-finder-list + .phone-finder-list {
+    border-top: 1px solid var(--phonespecs-border);
+}
+
+.phone-finder-card > .phone-finder-list:last-child .list-group-item {
+    text-align: center;
+}
+
 
 .public-layout {
     display: grid;
     grid-template-columns: 250px minmax(0, 1fr);
     gap: 18px;
     align-items: start;
+    margin-top: 0;
+    overflow: visible;
 }
 
 .public-sidebar {
     min-width: 0;
+    align-self: start;
+    margin-top: -7px;
     position: sticky;
-    top: 1rem;
+    top: calc(4.5rem + 1rem);
+    overflow: visible;
 }
 
 .public-main {
     min-width: 0;
+    align-self: start;
+    margin-top: 0;
+    overflow: visible;
 }
 
 .phone-brand-logo {
@@ -238,7 +444,7 @@ body {
     padding: 3px;
     object-fit: contain;
     background: #fff;
-    border: 1px solid #e9ecef;
+    border: 0;
 }
 
 .phone-finder-list .list-group-item.active {
@@ -248,6 +454,10 @@ body {
 }
 
 @media (max-width: 991.98px) {
+    .page-content {
+        padding-top: 1.25rem;
+    }
+
     .public-layout {
         grid-template-columns: 1fr;
     }
@@ -258,11 +468,31 @@ body {
 }
 
 @media (max-width: 767.98px) {
+    .page-content {
+        padding-top: 1rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: .65rem;
+    }
+
+    .section-heading .btn {
+        align-self: flex-start;
+    }
+
+    .site-search {
+        width: 100%;
+    }
+
     .public-layout {
         display: block;
     }
 
     .public-sidebar {
+        margin-top: 0;
         margin-bottom: 1rem;
     }
 }
@@ -296,9 +526,56 @@ body {
     background: #fff;
 }
 
+.device-spec-hero-header {
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+    padding: 0 16px;
+    color: #fff;
+    background: linear-gradient(110deg, #56aaa5, #8bc9c4);
+}
+
+.device-spec-hero-header h1 {
+    margin: 0;
+    font-size: clamp(1.25rem, 2.2vw, 1.8rem);
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.device-share-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin-left: auto;
+    padding: 0;
+    color: #fff;
+    background: transparent;
+    border: 0;
+}
+
+.device-share-button svg {
+    width: 22px;
+    height: 22px;
+}
+
+.device-share-button:hover,
+.device-share-button:focus-visible {
+    color: #173c3b;
+}
+
+.device-share-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+}
+
 .device-spec-hero-main {
     display: grid;
-    grid-template-columns: 300px minmax(0, 1fr);
+    grid-template-columns: minmax(210px, 25%) minmax(0, 1fr);
     min-height: 310px;
 }
 
@@ -327,7 +604,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 28px 30px;
+    padding: 0;
 }
 
 .device-spec-brand-row {
@@ -345,16 +622,51 @@ body {
     font-weight: 600;
 }
 
-.device-spec-hero-copy h1 {
-    margin: 0 0 .45rem;
-    font-size: clamp(2rem, 4vw, 3rem);
-    line-height: 1.05;
+.device-fact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    padding: 1rem 1.1rem .65rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--phonespecs-border);
 }
 
-.device-spec-release {
-    margin: 0;
+.device-fact {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    min-width: 0;
+    gap: .45rem;
+    padding: .3rem .6rem;
+    border-right: 1px solid var(--phonespecs-border);
+    border-bottom: 0;
+}
+
+.device-fact:nth-child(4n) {
+    border-right: 0;
+}
+
+.device-fact > i {
+    padding-top: .15rem;
+    color: #495057;
+    font-size: .85rem;
+}
+
+.device-fact span {
+    display: block;
+    margin-bottom: .12rem;
     color: var(--phonespecs-muted);
-    font-size: .9rem;
+    font-size: .68rem;
+}
+
+.device-fact strong {
+    display: block;
+    overflow: hidden;
+    color: #212529;
+    font-size: .82rem;
+    font-weight: 600;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .device-spec-actions {
@@ -368,15 +680,27 @@ body {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1px;
-    margin-top: 1.5rem;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding: .75rem .65rem;
+    background: #fff;
     border: 1px solid rgba(255, 255, 255, 0);
 }
 
 .device-key-spec {
+    position: relative;
     min-width: 0;
-    padding: 11px 12px;
+    padding: .7rem .8rem;
     border-left: 1px solid var(--phonespecs-border);
-    background: #f8f9fa;
+    background: #fff;
+}
+
+.device-key-spec > i {
+    display: block;
+    margin-bottom: .35rem;
+    color: #495057;
+    font-size: 1rem;
 }
 
 .device-key-spec:first-child {
@@ -386,15 +710,25 @@ body {
 .device-key-spec span {
     display: block;
     color: var(--phonespecs-muted);
-    font-size: .7rem;
+    font-size: .68rem;
     margin-bottom: 3px;
 }
 
 .device-key-spec strong {
     display: block;
     overflow: hidden;
-    font-size: .85rem;
+    font-size: 1.05rem;
     line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.device-key-spec small {
+    display: block;
+    overflow: hidden;
+    margin-top: .15rem;
+    color: var(--phonespecs-muted);
+    font-size: .68rem;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -403,25 +737,35 @@ body {
     display: flex;
     align-items: stretch;
     overflow-x: auto;
-    background: #212529;
+    margin-top: 0;
+    border-top: 1px solid var(--phonespecs-border);
+    background: #f8f9fa;
 }
 
 .device-section-nav a {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
+    flex: 1 0 auto;
+    justify-content: center;
+    min-height: 46px;
     padding: 0 15px;
-    color: rgba(255, 255, 255, .72);
-    border-right: 1px solid rgba(255, 255, 255, .08);
+    color: #495057;
+    border-right: 1px solid var(--phonespecs-border);
     text-decoration: none;
+    font-weight: 600;
     font-size: .78rem;
     white-space: nowrap;
 }
 
+.device-section-nav a i {
+    margin-right: .4rem;
+    font-size: .85rem;
+}
+
 .device-section-nav a:hover,
 .device-section-nav a.active {
-    color: #fff;
-    background: #343a40;
+    color: #0d6efd;
+    background: #eef4ff;
 }
 
 .device-data-section {
@@ -498,7 +842,7 @@ body {
     color: #495057;
     text-decoration: none;
     font-size: .75rem;
-    border-radius: 2px;
+    border-radius: var(--phonespecs-radius);
 }
 
 .device-spec-tabs a:hover {
@@ -516,6 +860,12 @@ body {
 
 .device-spec-group-title {
     padding: .65rem .8rem;
+}
+
+.phone-finder-card {
+    display: block;
+    width: 100%;
+    margin-top: 0 !important;
     background: #f8f9fa;
     border-bottom: 1px solid var(--phonespecs-border);
 }
@@ -548,6 +898,11 @@ body {
 }
 
 @media (max-width: 767.98px) {
+    .device-spec-hero-header {
+        min-height: 48px;
+        padding: 0 12px;
+    }
+
     .device-spec-hero-main {
         display: block;
     }
@@ -563,7 +918,20 @@ body {
     }
 
     .device-spec-hero-copy {
-        padding: 22px;
+        padding: 0;
+    }
+
+    .device-fact-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: .8rem;
+    }
+
+    .device-fact:nth-child(4n) {
+        border-right: 1px solid var(--phonespecs-border);
+    }
+
+    .device-fact:nth-child(2n) {
+        border-right: 0;
     }
 
     .device-key-specs {
@@ -573,6 +941,11 @@ body {
     .device-key-spec {
         border-left: 0;
         border-top: 1px solid var(--phonespecs-border);
+    }
+
+    .device-key-specs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: .5rem;
     }
 
     .device-key-spec:nth-child(odd) {
@@ -614,8 +987,6 @@ body {
 
 .admin-header {
     flex-shrink: 0;
-    position: relative;
-    z-index: 10;
 }
 
 .admin-main {
@@ -748,6 +1119,13 @@ body {
     margin-top: 1rem;
 }
 
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .admin-sidebar {
+        width: 205px;
+        min-width: 205px;
+    }
+}
+
 @media (max-width: 767.98px) {
     .site-header .nav-link.active {
         border-bottom: 0;
@@ -847,135 +1225,5 @@ body {
 
     .admin-content .table {
         min-width: 760px;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 991.98px) {
-    .admin-sidebar {
-        width: 205px;
-        min-width: 205px;
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
-| Global scroll behavior
-|--------------------------------------------------------------------------
-*/
-
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 1rem;
-}
-
-body {
-    overflow-x: hidden;
-}
-
-.admin-body {
-    min-height: 100vh;
-    height: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-.admin-shell {
-    min-height: 100vh;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.admin-header {
-    position: sticky;
-    top: 0;
-    z-index: 1030;
-}
-
-.admin-main {
-    display: block;
-    flex: none;
-    min-height: 0;
-    overflow: visible;
-}
-
-.admin-main-shell {
-    width: 100%;
-    max-width: 1180px;
-    height: auto;
-    min-height: 0;
-    margin-left: auto;
-    margin-right: auto;
-    display: grid;
-    grid-template-columns: 230px minmax(0, 1fr);
-    align-items: start;
-    overflow: visible;
-}
-
-.admin-sidebar {
-    width: 230px;
-    min-width: 230px;
-    position: sticky;
-    top: 56px;
-    max-height: calc(100vh - 56px);
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.admin-content {
-    min-width: 0;
-    min-height: 0;
-    overflow: visible;
-    padding: 1.5rem 0 3rem 1.5rem;
-}
-
-.admin-content-inner {
-    width: 100%;
-    min-width: 0;
-}
-
-.public-layout {
-    min-width: 0;
-}
-
-.public-sidebar {
-    min-width: 0;
-    position: sticky;
-    top: 1rem;
-    align-self: start;
-}
-
-.public-main {
-    min-width: 0;
-    overflow: visible;
-}
-
-@media (max-width: 991.98px) {
-    .public-sidebar {
-        position: static;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .admin-header {
-        position: static;
-    }
-
-    .admin-main-shell {
-        display: block;
-        max-width: 100%;
-    }
-
-    .admin-sidebar {
-        position: static;
-        width: 100%;
-        min-width: 0;
-        max-height: none;
-        overflow: visible;
-    }
-
-    .admin-content {
-        overflow: visible;
-        padding: 1rem 0 2rem;
     }
 }

@@ -16,9 +16,7 @@
                 <div class="brand-hero-content">
                     <div class="brand-hero-kicker">Phone brand</div>
                     <h1>{{ $brand->name }} phones</h1>
-                    <p>
-                        Browse {{ $deviceCount }} {{ Str::plural('device', $deviceCount) }} with quick filters, release sorting, and detailed specifications.
-                    </p>
+                    <p>{{ $deviceCount }} {{ Str::plural('device', $deviceCount) }}</p>
                     <div class="brand-hero-actions">
                         <a href="{{ route('compare.index') }}" class="btn btn-light btn-sm">Compare devices</a>
                         <a href="{{ route('news.index') }}" class="btn btn-outline-light btn-sm">{{ $brand->name }} news</a>
@@ -48,6 +46,20 @@
                     </a>
                 </div>
             </div>
+
+            <nav class="brand-status-tabs" aria-label="Brand device status">
+                @foreach ([
+                    '' => 'All phones',
+                    'available' => 'Available',
+                    'rumored' => 'Rumored',
+                    'discontinued' => 'Discontinued',
+                ] as $statusValue => $statusLabel)
+                    <a
+                        href="{{ route('brands.show', array_filter([$brand->slug, 'sort' => $sort, 'status' => $statusValue])) }}"
+                        class="{{ request('status') === ($statusValue ?: null) ? 'active' : '' }}"
+                    >{{ $statusLabel }}</a>
+                @endforeach
+            </nav>
 
             <section class="brand-filter-panel" aria-label="Quick filters">
                 <div class="brand-filter-header">
@@ -363,6 +375,29 @@
         min-height: 46px;
         background: #212529;
         color: #fff;
+    }
+
+    .brand-status-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+    }
+
+    .brand-status-tabs a {
+        padding: 6px 10px;
+        border: 1px solid var(--phonespecs-border);
+        background: #fff;
+        color: #495057;
+        font-size: .78rem;
+        text-decoration: none;
+    }
+
+    .brand-status-tabs a.active,
+    .brand-status-tabs a:hover {
+        border-color: #0d6efd;
+        background: #e7f1ff;
+        color: #0d6efd;
     }
 
     .brand-action-group,

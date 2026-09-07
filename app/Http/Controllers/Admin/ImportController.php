@@ -189,7 +189,7 @@ class ImportController extends Controller
 
             return redirect()
                 ->route('admin.imports.index')
-                ->with('error', 'The import could not be completed: ' . $e->getMessage());
+                ->with('error', 'The import could not be completed. Please review the import log.');
         }
 
         return redirect()

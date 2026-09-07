@@ -37,11 +37,11 @@ Route::view('/privacy', 'legal.privacy')->name('privacy');
 Route::view('/terms', 'legal.terms')->name('terms');
 
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:6,1'])
     ->name('admin.login');
 
 Route::post('/admin/login', [AdminAuthController::class, 'login'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:6,1'])
     ->name('admin.login.submit');
 
 Route::middleware(['auth', 'admin'])

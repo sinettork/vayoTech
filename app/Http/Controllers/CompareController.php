@@ -60,18 +60,6 @@ class CompareController extends Controller
             }
         }
 
-        $allDevices = Device::with('brand')
-            ->orderBy('name')
-            ->get(['id', 'brand_id', 'name', 'slug', 'image', 'release_date', 'status']);
-
-        $compareSearchData = $allDevices->map(fn ($device) => [
-            'id' => $device->id,
-            'name' => $device->name,
-            'brand' => $device->brand?->name,
-            'url' => route('devices.show', $device),
-            'image' => $device->image ? asset('storage/' . $device->image) : null,
-        ])->values();
-
         $quickSpecs = $devices->map(function ($device) {
             $find = fn (string $key) => $device->specs
                 ->first(fn ($spec) => strcasecmp($spec->spec_key, $key) === 0)
@@ -88,7 +76,6 @@ class CompareController extends Controller
         return view('compare.index', compact(
             'devices',
             'compareRows',
-            'compareSearchData',
             'quickSpecs'
         ));
     }

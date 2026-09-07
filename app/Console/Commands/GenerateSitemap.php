@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Brand;
 use App\Models\Device;
 use App\Models\NewsPost;
 use Illuminate\Console\Command;
@@ -29,6 +30,14 @@ class GenerateSitemap extends Command
                 Url::create(route('devices.show', $device))
                     ->setLastModificationDate($device->updated_at)
                     ->setPriority(0.7),
+            );
+        });
+
+        Brand::query()->cursor()->each(function (Brand $brand) use ($sitemap): void {
+            $sitemap->add(
+                Url::create(route('brands.show', $brand))
+                    ->setLastModificationDate($brand->updated_at)
+                    ->setPriority(0.6),
             );
         });
 
