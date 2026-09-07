@@ -39,7 +39,7 @@ class SeoFeatureTest extends TestCase
         ]);
 
         $this->get(route('home'))
-            ->assertSee('href="'.route('devices.index').'?brand=acme"', false)
-            ->assertSeeText('Acme');
+            ->assertSeeText('Acme')
+            ->assertSee('href="'.route('brands.show', 'acme').'"', false);
     }
 }
