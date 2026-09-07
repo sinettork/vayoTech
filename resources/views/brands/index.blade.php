@@ -18,14 +18,33 @@
     <section class="explore-brands-panel" aria-labelledby="brands-heading">
         <div class="explore-brands-heading">
             <div>
-                <div class="small text-muted">Phone brands</div>
+                <div class="small text-muted">PHONE BRANDS</div>
                 <h2 id="brands-heading" class="h5 mb-0">Choose a brand</h2>
             </div>
-            <span class="small text-muted">{{ $brands->count() }} {{ Str::plural('brand', $brands->count()) }}</span>
+            <div class="d-flex gap-2">
+                <a
+                    href="{{ route('brands.index') }}"
+                    class="btn btn-sm {{ $filter === 'all' ? 'btn-dark' : 'btn-outline-dark' }}"
+                    @if($filter === 'all') aria-current="page" @endif
+                >
+                    <i class="fa-solid fa-layer-group me-1" aria-hidden="true"></i>
+                    All Brand
+                </a>
+                <a
+                    href="{{ route('brands.index', ['filter' => 'rumored']) }}"
+                    class="btn btn-sm {{ $filter === 'rumored' ? 'btn-dark' : 'btn-outline-dark' }}"
+                    @if($filter === 'rumored') aria-current="page" @endif
+                >
+                    <i class="fa-solid fa-clock-rotate-left me-1" aria-hidden="true"></i>
+                    Rumored
+                </a>
+            </div>
         </div>
 
         @if ($brands->isEmpty())
-            <div class="alert alert-light border mb-0">No brands are available yet.</div>
+            <div class="alert alert-light border mb-0">
+                {{ $filter === 'rumored' ? 'No brands have rumored phones yet.' : 'No brands are available yet.' }}
+            </div>
         @else
             <div class="brand-card-grid">
                 @foreach ($brands as $brand)
@@ -99,9 +118,18 @@
 
     @media (max-width: 767.98px) {
         .explore-brands-hero,
-        .explore-brands-discovery {
+        .explore-brands-discovery,
+        .explore-brands-heading {
             align-items: flex-start;
             flex-direction: column;
+        }
+
+        .explore-brands-heading > .d-flex {
+            width: 100%;
+        }
+
+        .explore-brands-heading > .d-flex .btn {
+            flex: 1 1 0;
         }
     }
 </style>
