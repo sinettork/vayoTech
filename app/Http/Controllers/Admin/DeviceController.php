@@ -118,7 +118,7 @@ class DeviceController extends Controller
             'status' => ['required', 'in:rumored,available,discontinued'],
             'image' => ['nullable', 'image', 'max:2048'],
             'specs' => ['nullable', 'array'],
-            'specs.*.definition_id' => ['required', 'integer', 'exists:spec_definitions,id'],
+            'specs.*.definition_id' => ['required', 'integer', 'distinct', 'exists:spec_definitions,id'],
             'specs.*.spec_value' => ['required', 'string', 'max:500'],
         ]);
     }
