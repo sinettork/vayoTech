@@ -8,14 +8,26 @@ use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $brands = Brand::query()
+        $filter = $request->query('filter', 'all');
+
+        $brandsQuery = Brand::query();
+
+        if ($filter === 'rumored') {
+            $brandsQuery->whereHas('devices', function ($devices) {
+                $devices->where('status', 'rumored');
+            });
+        } else {
+            $filter = 'all';
+        }
+
+        $brands = $brandsQuery
             ->withCount('devices')
             ->orderBy('name')
             ->get();
 
-        return view('brands.index', compact('brands'));
+        return view('brands.index', compact('brands', 'filter'));
     }
 
     public function show(Brand $brand, Request $request)
