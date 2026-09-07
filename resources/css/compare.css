@@ -2,14 +2,43 @@
     --compare-border: #e2e6ea;
     --compare-muted: #6c757d;
     --compare-surface: #fff;
-    --compare-soft: #f8f9fa;
+    --compare-soft: #f5f7f9;
+}
+
+.compare-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 170px;
+    padding: 1.75rem 2rem;
+    color: #fff;
+    background:
+        linear-gradient(110deg, rgba(15, 23, 42, .96), rgba(30, 64, 175, .82)),
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, .08) 0, rgba(255, 255, 255, .08) 1px, transparent 1px, transparent 18px);
+    border-radius: var(--phonespecs-radius, 0);
+    margin-top: 0;
+}
+
+.compare-banner-kicker {
+    margin-bottom: .35rem;
+    color: rgba(255, 255, 255, .72);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+}
+
+.compare-banner h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
 }
 
 .compare-workspace,
 .compare-table-panel {
     background: var(--compare-surface);
     border: 1px solid var(--compare-border);
-    border-radius: .5rem;
+    border-radius: var(--phonespecs-radius, 0);
     box-shadow: 0 1px 2px rgba(33,37,41,.04);
     overflow: hidden;
 }
@@ -22,7 +51,7 @@
 .compare-slot {
     min-width: 0;
     min-height: 430px;
-    padding: 1rem;
+    padding: 1.1rem;
     border-right: 1px solid var(--compare-border);
     display: flex;
     flex-direction: column;
@@ -72,7 +101,7 @@
     overflow: hidden;
     background: #fff;
     border: 1px solid var(--compare-border);
-    border-radius: .4rem;
+    border-radius: var(--phonespecs-radius, 0);
     box-shadow: 0 8px 24px rgba(33,37,41,.12);
 }
 
@@ -103,7 +132,7 @@
     justify-content: center;
     overflow: hidden;
     border: 1px solid var(--compare-border);
-    border-radius: .35rem;
+    border-radius: var(--phonespecs-radius, 0);
     background: #f8f9fa;
     color: #adb5bd;
 }
@@ -131,7 +160,7 @@
     align-items: center;
     justify-content: center;
     border: 1px solid #edf0f2;
-    border-radius: .45rem;
+    border-radius: var(--phonespecs-radius, 0);
     background: var(--compare-soft);
 }
 
@@ -155,21 +184,24 @@
 .compare-device-actions { margin-top: auto; padding-top: 1rem; }
 
 .compare-empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1rem; }
-.compare-empty-icon { width: 76px; height: 108px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: #adb5bd; border: 2px dashed #ced4da; border-radius: 12px; }
+.compare-empty-icon { width: 76px; height: 108px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: #adb5bd; border: 2px dashed #ced4da; border-radius: var(--phonespecs-radius, 0); }
 .compare-empty-icon svg { width: 42px; height: 42px; }
 
 .compare-table-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; padding: 1rem 1rem .85rem; border-bottom: 1px solid var(--compare-border); }
+.compare-table-tools { display: flex; align-items: center; gap: .75rem; }
 .compare-spec-table { --bs-table-border-color: #e9ecef; }
 .compare-spec-table th,
 .compare-spec-table td { min-width: 170px; padding: .8rem .85rem; vertical-align: middle; }
 .compare-spec-table thead th { background: #f8f9fa; border-bottom: 1px solid var(--compare-border); }
 .compare-spec-name { min-width: 155px; position: sticky; left: 0; z-index: 3; background: #fff; }
 .compare-spec-table thead .compare-spec-name { background: #f8f9fa; }
-.compare-category-row th { background: #212529; color: #fff; font-size: .76rem; font-weight: 700; padding-top: .62rem; padding-bottom: .62rem; }
+.compare-category-row th { background: #eef2f5; color: #495057; font-size: .76rem; font-weight: 700; padding-top: .62rem; padding-bottom: .62rem; letter-spacing: .04em; }
 .compare-table-device { color: #6c757d; font-size: .7rem; font-weight: 600; margin-bottom: .1rem; }
 .compare-value-different { background: rgba(13,110,253,.045); }
+.compare-difference-row th { font-weight: 600; }
+.compare-table-tools .active { color: #0d6efd; background: #e7f1ff; border-color: #9ec5fe; }
 .compare-howto { border-color: var(--compare-border); }
-.compare-howto-icon { width: 42px; height: 42px; flex: 0 0 42px; display: flex; align-items: center; justify-content: center; border: 1px dashed #adb5bd; border-radius: .4rem; color: #6c757d; font-size: 1.25rem; }
+.compare-howto-icon { width: 42px; height: 42px; flex: 0 0 42px; display: flex; align-items: center; justify-content: center; border: 1px dashed #adb5bd; border-radius: var(--phonespecs-radius, 0); color: #6c757d; font-size: 1.25rem; }
 
 @media (max-width: 991.98px) {
     .compare-slots { grid-template-columns: 1fr; }
@@ -178,9 +210,11 @@
 }
 
 @media (max-width: 575.98px) {
+    .compare-banner { align-items: flex-start; flex-direction: column; min-height: 145px; padding: 1.35rem; }
     .compare-slot { padding: .85rem; }
     .compare-device-head { grid-template-columns: 78px minmax(0,1fr) auto; gap: .65rem; }
     .compare-device-image-wrap { width: 78px; height: 102px; }
     .compare-device-name { font-size: .95rem; }
     .compare-table-heading { align-items: flex-start; flex-direction: column; }
+    .compare-table-tools { align-items: flex-start; flex-direction: column; }
 }

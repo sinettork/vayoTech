@@ -7,9 +7,9 @@
                 <span class="text-muted small">No image</span>
             </div>
         @endif
-        <div class="card-body p-2 text-center">
+        <div class="card-body p-3">
             <h3 class="h6 card-title mb-1">
-                <i class="fa-solid fa-mobile-screen-button me-1" aria-hidden="true"></i>{{ $device->name }}
+                {{ $device->name }}
             </h3>
             <p class="text-muted small mb-0">
                 {{ $device->brand->name ?? '' }}

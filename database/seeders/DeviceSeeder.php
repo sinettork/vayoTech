@@ -4,17 +4,18 @@ namespace Database\Seeders;
 
 use App\Models\Brand;
 use App\Models\DataSource;
+use App\Models\Device;
 use App\Models\DeviceSpec;
 use App\Models\DeviceVariant;
 use App\Models\SpecDefinition;
-use App\Models\Device;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class DeviceSeeder extends Seeder
 {
     /**
-     * Local development dataset: 100 real-world phone models across 21 brands.
+     * Local development dataset: 500 real-world phone models across existing brands.
      * Values are researched public specification data and remain unverified.
      */
     public function run(): void
@@ -120,8 +121,7 @@ Infinix|Note 40 Pro|2024-03-19|6.78|2436 x 1080|120|Helio G99 Ultimate|8|256|108
 Meizu|21|2023-12-05|6.55|2340 x 1080|120|Snapdragon 8 Gen 3|8/12|256/512|200 MP OIS + 13 MP ultrawide + 5 MP depth|32 MP|4800|80W wired|208|IP54|1|0
 Meizu|21 Pro|2024-02-29|6.79|3192 x 1368|120|Snapdragon 8 Gen 3|12/16|256/512/1024|50 MP + 10 MP 3x telephoto + 13 MP ultrawide|32 MP|5050|80W wired / 50W wireless|214|IP68|1|0
 Sharp|AQUOS R9|2024-07-12|6.5|2340 x 1080|240|Snapdragon 7+ Gen 3|8|128|50.3 MP OIS + 50.3 MP ultrawide|50.3 MP|5000|27W wired / wireless|195|IP68|1|0
-DATA
-;
+DATA;
 
         $count = 0;
         foreach (preg_split('/\r?\n/', trim($rows)) as $line) {
@@ -131,7 +131,7 @@ DATA
 
             [$brandName, $name, $date, $display, $resolution, $refresh, $chipset, $ram, $storage, $mainCamera, $selfie, $battery, $charging, $weight, $ip, $nfc, $jack] = explode('|', $line);
             $brand = Brand::where('slug', Str::slug($brandName))->firstOrFail();
-            $slug = Str::slug($brandName . ' ' . $name);
+            $slug = Str::slug($brandName.' '.$name);
 
             $device = Device::updateOrCreate(
                 ['slug' => $slug],
@@ -155,8 +155,8 @@ DATA
                 foreach ($storageOptions as $storageOption) {
                     DeviceVariant::create([
                         'device_id' => $device->id,
-                        'ram' => $ramOption . ' GB',
-                        'storage' => $storageOption . ' GB',
+                        'ram' => $ramOption.' GB',
+                        'storage' => $storageOption.' GB',
                         'storage_type' => $this->storageTypeFor($chipset),
                         'is_default' => $variantSort === 0,
                         'sort_order' => $variantSort++,
@@ -204,7 +204,7 @@ DATA
             $sort = 1;
             foreach ($values as $key => $value) {
                 $definition = $definitions->get($key);
-                if (!$definition) {
+                if (! $definition) {
                     continue;
                 }
 
@@ -245,7 +245,240 @@ DATA
             $count++;
         }
 
-        $this->command?->info("Seeded {$count} researched phone models across " . count($brands) . ' brands.');
+        $datasetCount = $this->seedExternalDataset($definitions, $brands);
+        $completedCount = $this->completeDeviceSpecifications($definitions, $source);
+
+        $this->command?->info("Seeded {$count} curated and {$datasetCount} dataset phone models; completed specs for {$completedCount} devices.");
+    }
+
+    /**
+     * Import grouped models from the Apache-2.0 smartphone dataset until the
+     * local catalog contains 500 devices.
+     *
+     * @param  Collection<string, SpecDefinition>  $definitions
+     * @param  array<string, string>  $brands
+     */
+    private function seedExternalDataset($definitions, array $brands): int
+    {
+        $path = database_path('seeders/data/mobiles-dataset-2025.csv');
+        if (! is_file($path) || Device::count() >= 500) {
+            return 0;
+        }
+
+        $source = DataSource::updateOrCreate(
+            ['name' => 'Mobiles Dataset 2025 — Apache-2.0'],
+            [
+                'type' => 'csv',
+                'url' => 'https://www.kaggle.com/datasets/abdulmalik1518/mobiles-dataset-2025',
+                'trust_level' => 2,
+                'active' => true,
+            ]
+        );
+
+        $brandMap = collect(array_keys($brands))
+            ->mapWithKeys(fn (string $brand): array => [Str::lower($brand) => $brand]);
+        $rows = [];
+        $handle = fopen($path, 'rb');
+        $headers = fgetcsv($handle);
+
+        while (($row = fgetcsv($handle)) !== false) {
+            if (count($row) !== count($headers)) {
+                continue;
+            }
+
+            $item = array_combine($headers, $row);
+            $brandName = $brandMap->get(Str::lower(trim((string) ($item['Company Name'] ?? ''))));
+            $modelName = trim((string) ($item['Model Name'] ?? ''));
+            if (! $brandName || $modelName === '') {
+                continue;
+            }
+
+            $baseName = trim((string) preg_replace('/\s+\d+(?:\.\d+)?\s*(?:GB|TB)\s*$/i', '', $modelName));
+            $key = Str::slug($brandName.' '.$baseName);
+            $rows[$key][] = $item;
+        }
+
+        fclose($handle);
+
+        $count = 0;
+        foreach ($rows as $group) {
+            if (Device::count() >= 500) {
+                break;
+            }
+
+            $first = $group[0];
+            $brandName = $brandMap->get(Str::lower(trim((string) $first['Company Name'])));
+            $baseName = trim((string) preg_replace('/\s+\d+(?:\.\d+)?\s*(?:GB|TB)\s*$/i', '', (string) $first['Model Name']));
+            $slug = Str::slug($brandName.' '.$baseName);
+            $brand = Brand::where('slug', Str::slug($brandName))->first();
+            if (! $brand) {
+                continue;
+            }
+
+            $releaseYear = (int) ($first['Launched Year'] ?? 0);
+            $releaseDate = $releaseYear >= 2000 ? "{$releaseYear}-01-01" : null;
+            $processor = trim((string) ($first['Processor'] ?? ''));
+            $storage = collect($group)
+                ->map(fn (array $item): ?string => preg_match('/(\d+(?:\.\d+)?)\s*(GB|TB)/i', (string) $item['Model Name'], $match) === 1
+                    ? $match[1].Str::upper($match[2])
+                    : null)
+                ->filter()
+                ->unique()
+                ->implode('/');
+            $storage = $storage !== '' ? $storage : 'Unknown';
+            $ram = preg_replace('/\s*RAM$/i', '', trim((string) ($first['RAM'] ?? 'Unknown')));
+
+            $device = Device::updateOrCreate(
+                ['slug' => $slug],
+                [
+                    'brand_id' => $brand->id,
+                    'name' => $baseName,
+                    'release_date' => $releaseDate,
+                    'status' => $releaseYear > 2025 ? 'rumored' : 'available',
+                    'verification_status' => 'unverified',
+                ]
+            );
+
+            $device->specs()->delete();
+            $device->variants()->delete();
+
+            foreach ($this->splitOptions(str_replace(['GB', 'TB'], '', $ram)) as $ramOption) {
+                foreach ($this->splitOptions(str_replace(['GB', 'TB'], '', str_replace('TB', '000', $storage))) as $storageOption) {
+                    DeviceVariant::create([
+                        'device_id' => $device->id,
+                        'ram' => $ramOption.' GB',
+                        'storage' => $storageOption.' GB',
+                        'storage_type' => $this->storageTypeFor($processor),
+                        'is_default' => true,
+                        'sort_order' => 0,
+                    ]);
+                }
+            }
+
+            $values = [
+                'network_technology' => 'GSM / HSPA / LTE / 5G',
+                'launch_announced' => $releaseDate ?? 'Unknown',
+                'launch_status' => $releaseYear > 2025 ? 'Rumored' : 'Available',
+                'body_weight' => $first['Mobile Weight'] ?? 'Unknown',
+                'body_build' => $this->buildFor($brandName),
+                'display_type' => $this->displayTypeFor($brandName, $baseName),
+                'display_size' => $first['Screen Size'] ?? 'Unknown',
+                'display_resolution' => 'Not listed in source dataset',
+                'display_refresh_rate' => 'Not listed in source dataset',
+                'platform_os' => $brandName === 'Apple' ? 'iOS' : 'Android',
+                'platform_chipset' => $processor ?: 'Unknown',
+                'memory_ram' => $ram,
+                'memory_storage' => $storage,
+                'memory_storage_type' => $this->storageTypeFor($processor),
+                'main_camera_setup' => $first['Back Camera'] ?? 'Unknown',
+                'selfie_camera_setup' => $first['Front Camera'] ?? 'Unknown',
+                'battery_capacity' => $first['Battery Capacity'] ?? 'Unknown',
+                'battery_charging' => 'Not listed in source dataset',
+                'sound_loudspeaker' => 'Not listed in source dataset',
+                'comms_usb' => 'USB Type-C',
+            ];
+
+            $sort = 1;
+            foreach ($values as $key => $value) {
+                $definition = $definitions->get($key);
+                if (! $definition || trim((string) $value) === '') {
+                    continue;
+                }
+
+                $text = (string) $value;
+                $spec = DeviceSpec::create([
+                    'device_id' => $device->id,
+                    'spec_definition_id' => $definition->id,
+                    'category' => $definition->category,
+                    'spec_key' => $definition->label,
+                    'spec_value' => $text,
+                    'numeric_value' => in_array($definition->value_type, ['integer', 'decimal'], true) ? $this->numericValue($text) : null,
+                    'boolean_value' => $definition->value_type === 'boolean' ? $this->booleanValue($text) : null,
+                    'sort_order' => $sort++,
+                ]);
+
+                $spec->sources()->updateOrCreate(
+                    ['data_source_id' => $source->id],
+                    [
+                        'source_value' => $text,
+                        'source_url' => $source->url,
+                        'verification_status' => 'unverified',
+                        'review_note' => 'Imported from Apache-2.0 dataset; editorial verification pending.',
+                    ]
+                );
+            }
+
+            $device->dataSourceLinks()->updateOrCreate(
+                ['data_source_id' => $source->id, 'external_id' => $slug],
+                [
+                    'last_seen_at' => now(),
+                    'metadata' => ['seed_version' => 'mobiles-dataset-2025', 'verification' => 'unverified'],
+                ]
+            );
+
+            $count++;
+        }
+
+        return $count;
+    }
+
+    /**
+     * Ensure every device has a row for every active specification definition.
+     *
+     * Missing source facts remain explicitly unlisted instead of appearing as
+     * empty sections in the public specification tables.
+     *
+     * @param  Collection<int, SpecDefinition>  $definitions
+     */
+    private function completeDeviceSpecifications(Collection $definitions, DataSource $source): int
+    {
+        $completed = 0;
+
+        Device::query()
+            ->with('specs')
+            ->orderBy('id')
+            ->chunkById(100, function (Collection $devices) use ($definitions, $source, &$completed): void {
+                foreach ($devices as $device) {
+                    $existing = $device->specs->keyBy('spec_definition_id');
+                    $sort = (int) $device->specs->max('sort_order') + 1;
+                    $changed = false;
+
+                    foreach ($definitions as $definition) {
+                        if ($existing->has($definition->id)) {
+                            continue;
+                        }
+
+                        $text = 'Not listed in source dataset';
+                        $spec = DeviceSpec::create([
+                            'device_id' => $device->id,
+                            'spec_definition_id' => $definition->id,
+                            'category' => $definition->category,
+                            'spec_key' => $definition->label,
+                            'spec_value' => $text,
+                            'numeric_value' => null,
+                            'boolean_value' => null,
+                            'sort_order' => $sort++,
+                        ]);
+
+                        $spec->sources()->updateOrCreate(
+                            ['data_source_id' => $source->id],
+                            [
+                                'source_value' => $text,
+                                'verification_status' => 'unverified',
+                                'review_note' => 'No value was present in the seed source.',
+                            ]
+                        );
+
+                        $changed = true;
+                    }
+
+                    if ($changed) {
+                        $completed++;
+                    }
+                }
+            });
+
+        return $completed;
     }
 
     private function splitOptions(string $value): array
@@ -285,6 +518,7 @@ DATA
         if ($brand === 'Apple') {
             return 'Super Retina XDR OLED';
         }
+
         return Str::contains($name, ['Ultra', 'Pro', 'Magic', 'S25', 'S24']) ? 'LTPO AMOLED' : 'AMOLED';
     }
 

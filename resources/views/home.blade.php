@@ -20,12 +20,12 @@
                             <div>
                                 <div class="fw-semibold small">{{ $device->name }}</div>
                                 <div class="text-muted small">{{ $device->brand->name }}</div>
-                            </div>
+                            </article>
                         </div>
                     </a>
                 @endforeach
             </div>
-        </div>
+        </article>
     @endif
 
     <div class="card content-card">
@@ -40,43 +40,53 @@
 
 @section('content')
 
-<div class="d-flex align-items-center justify-content-between mb-3">
-    <div>
-        <span class="text-primary small fw-semibold">Fresh arrivals</span>
-        <h1 class="h2 mb-0">Latest devices</h1>
+<section class="home-section">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">Devices</span>
+            <h1 class="section-title">Latest devices</h1>
+        </div>
+        <a href="{{ route('devices.index') }}" class="btn btn-outline-primary btn-sm">Browse all phones</a>
     </div>
-    <a href="{{ route('devices.index') }}" class="btn btn-outline-primary btn-sm">Browse all</a>
-</div>
 
-<div class="row g-2 mb-5">
-    @foreach ($latestDevices as $device)
-        <div class="col-6 col-md-3">
-            @include('partials.device-card', ['device' => $device])
-        </div>
-    @endforeach
-</div>
-
-<div class="d-flex align-items-center justify-content-between mb-3">
-    <h2 class="h3 mb-0">Latest news</h2>
-    <a href="{{ route('news.index') }}" class="btn btn-outline-secondary btn-sm">All news</a>
-</div>
-
-<div class="row g-2">
-    @foreach ($latestNews as $post)
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <a href="{{ route('news.show', $post) }}" class="text-decoration-none text-dark">
-                            {{ $post->title }}
-                        </a>
-                    </h5>
-                    <p class="text-muted small">{{ $post->published_at->format('M d, Y') }}</p>
-                    <p class="card-text">{{ Str::limit(strip_tags($post->body), 100) }}</p>
-                </div>
+    <div class="row g-3">
+        @foreach ($latestDevices as $device)
+            <div class="col-6 col-md-3">
+                @include('partials.device-card', ['device' => $device])
             </div>
+        @endforeach
+    </div>
+</section>
+
+<section class="home-section home-section-news">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">News</span>
+            <h2 class="section-title">Latest news</h2>
         </div>
-    @endforeach
-</div>
+        <a href="{{ route('news.index') }}" class="btn btn-outline-secondary btn-sm">View all news</a>
+    </div>
+
+    <div class="row g-3">
+        @foreach ($latestNews as $post)
+            <div class="col-md-6">
+                <article class="card news-preview-card h-100">
+                    <div class="card-body">
+                        <div class="news-preview-date">{{ $post->published_at->format('M d, Y') }}</div>
+                        <h3 class="h5 card-title">
+                            <a href="{{ route('news.show', $post) }}" class="text-decoration-none text-dark">
+                                {{ $post->title }}
+                            </a>
+                        </h3>
+                        <p class="card-text text-muted mb-0">{{ Str::limit(strip_tags($post->body), 140) }}</p>
+                    </div>
+                    <div class="card-footer bg-white border-0 pt-0">
+                        <a href="{{ route('news.show', $post) }}" class="small fw-semibold text-decoration-none">Read story</a>
+                    </div>
+                </article>
+            </div>
+        @endforeach
+    </div>
+</section>
 
 @endsection

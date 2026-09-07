@@ -94,6 +94,39 @@
                 No specifications added yet.
             </div>
         </div>
+
+        <div class="bg-white border p-4 mt-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <div>
+                    <h2 class="h5 mb-1">Variants</h2>
+                    <p class="text-muted small mb-0">Add RAM and storage combinations, regional details, and pricing.</p>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-dark" id="add-variant">Add Variant</button>
+            </div>
+
+            @php
+                $formVariants = old('variants', isset($device) ? $device->variants->map(fn ($variant) => [
+                    'ram' => $variant->ram,
+                    'storage' => $variant->storage,
+                    'storage_type' => $variant->storage_type,
+                    'model_code' => $variant->model_code,
+                    'market' => $variant->market,
+                    'price' => $variant->price,
+                    'currency' => $variant->currency,
+                    'is_default' => $variant->is_default,
+                ])->toArray() : []);
+            @endphp
+
+            <div id="variants-list">
+                @foreach($formVariants as $index => $variant)
+                    @include('admin.devices._variant-row', ['index' => $index, 'variant' => $variant])
+                @endforeach
+            </div>
+
+            <div id="variants-empty" class="text-muted text-center border p-4 {{ count($formVariants) ? 'd-none' : '' }}">
+                No variants added yet.
+            </div>
+        </div>
     </div>
 
     <div class="col-lg-4">
@@ -112,6 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const list = document.getElementById('spec-list');
     const empty = document.getElementById('spec-empty');
     const addButton = document.getElementById('add-spec');
+    const variantsList = document.getElementById('variants-list');
+    const variantsEmpty = document.getElementById('variants-empty');
+    const addVariantButton = document.getElementById('add-variant');
     const brand = document.getElementById('brand_id');
     const name = document.getElementById('name');
     const slug = document.getElementById('slug');
@@ -120,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagePreviewImg = document.getElementById('image-preview-img');
 
     let specIndex = {{ count($formSpecs) }};
+    let variantIndex = {{ count($formVariants) }};
     let slugManual = slug?.value.trim() !== '';
 
     const definitions = @json($specDefinitions->map(fn ($definition) => [
@@ -192,6 +229,65 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     addButton?.addEventListener('click', addRow);
+
+    function addVariantRow() {
+        const row = document.createElement('div');
+        row.className = 'border p-3 mb-3 variant-row';
+        row.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <strong class="small">Variant</strong>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-variant">Remove</button>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label small">RAM</label>
+                    <input type="text" name="variants[${variantIndex}][ram]" class="form-control form-control-sm" required maxlength="50" placeholder="8GB">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small">Storage</label>
+                    <input type="text" name="variants[${variantIndex}][storage]" class="form-control form-control-sm" required maxlength="50" placeholder="128GB">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Storage type</label>
+                    <input type="text" name="variants[${variantIndex}][storage_type]" class="form-control form-control-sm" maxlength="50" placeholder="UFS 4.0">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Model code</label>
+                    <input type="text" name="variants[${variantIndex}][model_code]" class="form-control form-control-sm" maxlength="100" placeholder="SM-S928B">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Market</label>
+                    <input type="text" name="variants[${variantIndex}][market]" class="form-control form-control-sm" maxlength="50" placeholder="Global">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small">Price</label>
+                    <input type="number" name="variants[${variantIndex}][price]" class="form-control form-control-sm" min="0" step="0.01" placeholder="999.00">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Currency</label>
+                    <input type="text" name="variants[${variantIndex}][currency]" value="USD" class="form-control form-control-sm text-uppercase" maxlength="3">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <div class="form-check mb-2">
+                        <input type="hidden" name="variants[${variantIndex}][is_default]" value="0">
+                        <input type="checkbox" name="variants[${variantIndex}][is_default]" value="1" class="form-check-input" id="variant-default-${variantIndex}">
+                        <label class="form-check-label small" for="variant-default-${variantIndex}">Set as default</label>
+                    </div>
+                </div>
+            </div>
+        `;
+        variantsList.appendChild(row);
+        variantIndex++;
+        variantsEmpty.classList.add('d-none');
+    }
+
+    variantsList?.addEventListener('click', (event) => {
+        if (!event.target.classList.contains('remove-variant')) return;
+        event.target.closest('.variant-row')?.remove();
+        if (!variantsList.querySelector('.variant-row')) variantsEmpty.classList.remove('d-none');
+    });
+
+    addVariantButton?.addEventListener('click', addVariantRow);
 });
 </script>
 @endpush

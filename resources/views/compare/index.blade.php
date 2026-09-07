@@ -5,21 +5,20 @@
 
 @section('content')
 <div class="compare-page">
-    <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
+    <header class="compare-banner mb-3">
         <div>
-            <span class="text-primary small fw-semibold">Phone comparison</span>
-            <h1 class="h2 mb-1">Compare specs</h1>
-            <p class="text-muted mb-0">Search and compare up to three phones side by side.</p>
+            <div class="compare-banner-kicker">Phone tools</div>
+            <h1>Compare specs</h1>
         </div>
-        <a href="{{ route('devices.index') }}" class="btn btn-outline-secondary btn-sm">Browse phones</a>
-    </div>
+        <a href="{{ route('devices.index') }}" class="btn btn-light btn-sm">Browse phones</a>
+    </header>
 
     <section class="compare-workspace mb-4" aria-label="Phone comparison workspace">
         <div class="compare-slots">
             @for ($slot = 0; $slot < 3; $slot++)
                 <section class="compare-slot" data-slot="{{ $slot }}" aria-label="Comparison slot {{ $slot + 1 }}">
                     <div class="compare-slot-search">
-                        <label class="compare-search-label" for="compare-search-{{ $slot }}">Compare with</label>
+                        <label class="compare-search-label" for="compare-search-{{ $slot }}">Phone {{ $slot + 1 }}</label>
                         <div class="position-relative">
                             <svg class="compare-search-icon" viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="m21 21-4.35-4.35m1.35-5.15a6.5 6.5 0 1 1-13 0Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -65,7 +64,7 @@
                                         <span class="text-muted small">{{ substr((string) $devices->get($slot)->release_date, 0, 4) }}</span>
                                     @endif
                                     @if ($devices->get($slot)->status)
-                                        <span class="badge rounded-pill text-bg-light border text-capitalize">{{ $devices->get($slot)->status }}</span>
+                                        <span class="badge text-bg-light border text-capitalize">{{ $devices->get($slot)->status }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -109,7 +108,6 @@
                                 </svg>
                             </div>
                             <h2 class="h6 mb-1">Add a phone</h2>
-                            <p class="text-muted small mb-0">Use the search box above to choose a device.</p>
                         </div>
                     @endif
                 </section>
@@ -124,7 +122,12 @@
                     <span class="text-primary small fw-semibold">Side by side</span>
                     <h2 class="h4 mb-1">Detailed specifications</h2>
                 </div>
-                <span class="text-muted small">{{ $devices->count() }} devices selected</span>
+                <div class="compare-table-tools">
+                    <span class="text-muted small">{{ $devices->count() }} phones selected</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="compare-differences-toggle" aria-pressed="false">
+                        Show differences only
+                    </button>
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -147,7 +150,7 @@
                                     <th colspan="{{ $devices->count() + 1 }}">{{ $row['category'] }}</th>
                                 </tr>
                             @endif
-                            <tr>
+                            <tr class="{{ $row['has_difference'] ? 'compare-difference-row' : 'compare-same-row' }}">
                                 <th class="compare-spec-name">{{ $row['key'] }}</th>
                                 @foreach ($row['values'] as $value)
                                     <td class="{{ $row['has_difference'] ? 'compare-value-different' : '' }}">{{ $value ?: '—' }}</td>
@@ -177,9 +180,21 @@
 @push('scripts')
 <script>
 (() => {
-    const devices = @json($compareSearchData);
+    const differencesToggle = document.getElementById('compare-differences-toggle');
+    differencesToggle?.addEventListener('click', () => {
+        const showingDifferences = differencesToggle.getAttribute('aria-pressed') === 'true';
+        const nextState = !showingDifferences;
+        differencesToggle.setAttribute('aria-pressed', String(nextState));
+        differencesToggle.classList.toggle('active', nextState);
+        differencesToggle.textContent = nextState ? 'Show all specifications' : 'Show differences only';
+        document.querySelectorAll('.compare-same-row').forEach((row) => {
+            row.classList.toggle('d-none', nextState);
+        });
+    });
+
     const selectedIds = @json($devices->pluck('id')->values());
     const compareUrl = @json(route('compare.index'));
+    const searchUrl = @json(route('devices.search'));
 
     const buildUrl = (ids) => {
         const valid = ids.filter(Boolean).slice(0, 3);
@@ -205,15 +220,23 @@
             return;
         }
 
-        const results = devices
-            .filter((device) => !blocked.includes(device.id))
-            .filter((device) => `${device.brand || ''} ${device.name}`.toLowerCase().includes(query))
-            .slice(0, 8);
+        fetch(`${searchUrl}?q=${encodeURIComponent(query)}`, {
+            headers: { 'Accept': 'application/json' },
+        })
+            .then((response) => {
+                if (!response.ok) throw new Error('Phone search failed.');
+                return response.json();
+            })
+            .then((results) => {
+                const available = results.filter((device) => !blocked.includes(device.id));
 
-        if (!results.length) {
-            resultsBox.innerHTML = '<div class="compare-search-empty">No phones found.</div>';
-        } else {
-            results.forEach((device) => {
+                if (!available.length) {
+                    resultsBox.innerHTML = '<div class="compare-search-empty">No phones found.</div>';
+                    resultsBox.classList.add('is-visible');
+                    return;
+                }
+
+                available.forEach((device) => {
                 const item = document.createElement('button');
                 item.type = 'button';
                 item.className = 'compare-search-result';
@@ -228,10 +251,13 @@
                     </span>
                 `;
                 resultsBox.appendChild(item);
+                });
+                resultsBox.classList.add('is-visible');
+            })
+            .catch(() => {
+                resultsBox.innerHTML = '<div class="compare-search-empty">Search is unavailable. Try again.</div>';
+                resultsBox.classList.add('is-visible');
             });
-        }
-
-        resultsBox.classList.add('is-visible');
     };
 
     document.querySelectorAll('.compare-search-input').forEach((input) => {

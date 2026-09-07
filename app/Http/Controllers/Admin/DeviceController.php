@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Device;
 use App\Models\SpecDefinition;
 use App\Services\DeviceSpecSyncService;
+use App\Services\DeviceVariantSyncService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -51,21 +52,29 @@ class DeviceController extends Controller
         ]);
     }
 
-    public function store(Request $request, DeviceSpecSyncService $specSync): RedirectResponse
-    {
+    public function store(
+        Request $request,
+        DeviceSpecSyncService $specSync,
+        DeviceVariantSyncService $variantSync
+    ): RedirectResponse {
         $data = $this->validateDevice($request);
         $data['slug'] = $data['slug'] ?: $this->uniqueSlug($data['name'], $data['brand_id']);
         $data['image'] = $this->storeImage($request);
 
         $device = Device::create($data);
         $specSync->sync($device, $request->input('specs', []));
+        $variantSync->sync($device, $request->input('variants', []));
 
         return redirect()->route('admin.devices.index')->with('success', 'Device created successfully.');
     }
 
     public function edit(Device $device): View
     {
-        $device->load(['brand', 'specs' => fn ($query) => $query->orderBy('sort_order')->with('definition')]);
+        $device->load([
+            'brand',
+            'specs' => fn ($query) => $query->orderBy('sort_order')->with('definition'),
+            'variants' => fn ($query) => $query->orderBy('sort_order'),
+        ]);
 
         return view('admin.devices.edit', [
             'device' => $device,
@@ -74,8 +83,12 @@ class DeviceController extends Controller
         ]);
     }
 
-    public function update(Request $request, Device $device, DeviceSpecSyncService $specSync): RedirectResponse
-    {
+    public function update(
+        Request $request,
+        Device $device,
+        DeviceSpecSyncService $specSync,
+        DeviceVariantSyncService $variantSync
+    ): RedirectResponse {
         $data = $this->validateDevice($request, $device->id);
         $data['slug'] = $data['slug'] ?: $device->slug;
 
@@ -88,6 +101,7 @@ class DeviceController extends Controller
 
         $device->update($data);
         $specSync->sync($device, $request->input('specs', []));
+        $variantSync->sync($device, $request->input('variants', []));
 
         return redirect()->route('admin.devices.index')->with('success', 'Device updated successfully.');
     }
@@ -120,6 +134,15 @@ class DeviceController extends Controller
             'specs' => ['nullable', 'array'],
             'specs.*.definition_id' => ['required', 'integer', 'distinct', 'exists:spec_definitions,id'],
             'specs.*.spec_value' => ['required', 'string', 'max:500'],
+            'variants' => ['nullable', 'array'],
+            'variants.*.ram' => ['required', 'string', 'max:50'],
+            'variants.*.storage' => ['required', 'string', 'max:50'],
+            'variants.*.storage_type' => ['nullable', 'string', 'max:50'],
+            'variants.*.model_code' => ['nullable', 'string', 'max:100'],
+            'variants.*.market' => ['nullable', 'string', 'max:50'],
+            'variants.*.price' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.currency' => ['nullable', 'string', 'size:3'],
+            'variants.*.is_default' => ['nullable', 'boolean'],
         ]);
     }
 
@@ -136,12 +159,12 @@ class DeviceController extends Controller
     private function uniqueSlug(string $name, int $brandId): string
     {
         $brand = Brand::find($brandId);
-        $base = Str::slug(($brand?->name ? $brand->name . ' ' : '') . $name) ?: 'device';
+        $base = Str::slug(($brand?->name ? $brand->name.' ' : '').$name) ?: 'device';
         $slug = $base;
         $counter = 2;
 
         while (Device::where('slug', $slug)->exists()) {
-            $slug = $base . '-' . $counter++;
+            $slug = $base.'-'.$counter++;
         }
 
         return $slug;

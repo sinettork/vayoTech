@@ -53,10 +53,7 @@
                             <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('devices.index') && request('status') === 'available' ? 'active' : '' }}" href="{{ route('devices.index', ['status' => 'available']) }}">Available</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('devices.index') && request('status') === 'rumored' ? 'active' : '' }}" href="{{ route('devices.index', ['status' => 'rumored']) }}">Rumored</a>
+                            <a class="nav-link {{ request()->routeIs('devices.*') ? 'active' : '' }}" href="{{ route('devices.index') }}">Phones</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('brands.*') ? 'active' : '' }}" href="{{ route('brands.index') }}">Explore brands</a>
@@ -68,7 +65,7 @@
                             <a class="nav-link {{ request()->routeIs('compare.*') ? 'active' : '' }}" href="{{ route('compare.index') }}">Compare</a>
                         </li>
                     </ul>
-                    <div class="position-relative mt-3 mt-lg-0" style="width: 300px;">
+                    <div class="site-search position-relative mt-3 mt-lg-0">
                         <label class="visually-hidden" for="search-box">Search phones</label>
                         <input type="search" id="search-box" class="form-control" placeholder="Search phones..." autocomplete="off" spellcheck="false">
                         <div id="search-results" class="list-group position-absolute w-100" style="z-index: 1000; display: none;"></div>
@@ -78,7 +75,7 @@
         </nav>
     </header>
 
-    <main class="container page-shell my-4">
+    <main class="container page-shell page-content">
 
         @hasSection('hide_phone_finder')
             @yield('content')
@@ -96,7 +93,7 @@
 
     </main>
 
-    <footer class="bg-light text-center py-3 mt-5">
+    <footer class="site-footer bg-light text-center py-3">
         <p class="mb-0">&copy; {{ date('Y') }} VayoTech. <a href="{{ route('privacy') }}">Privacy</a> &middot; <a href="{{ route('terms') }}">Terms</a></p>
     </footer>
     <div id="cookie-banner" class="alert alert-dark rounded-0 fixed-bottom mb-0 d-none" role="dialog" aria-label="Cookie notice">
