@@ -54,13 +54,27 @@
         @endforelse
     </div>
 
-    <div class="card-footer text-center">
-        <a
-            href="{{ route('brands.index') }}"
-            class="btn btn-sm btn-outline-dark"
-        >
-            Explore brands
-        </a>
+    <div class="card-footer">
+        <div class="row g-2" aria-label="Explore phone brands">
+            <div class="col-6">
+                <a
+                    href="{{ route('brands.index') }}"
+                    class="btn btn-sm btn-outline-dark w-100"
+                >
+                    <i class="fa-solid fa-layer-group me-1" aria-hidden="true"></i>
+                    All Brand
+                </a>
+            </div>
+            <div class="col-6">
+                <a
+                    href="{{ route('brands.index', ['filter' => 'rumored']) }}"
+                    class="btn btn-sm btn-outline-dark w-100"
+                >
+                    <i class="fa-solid fa-clock-rotate-left me-1" aria-hidden="true"></i>
+                    Rumored
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
