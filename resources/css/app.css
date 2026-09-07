@@ -8,6 +8,7 @@
 
 html {
     min-height: 100%;
+    scroll-padding-top: 4.5rem;
 }
 
 body {
@@ -16,6 +17,12 @@ body {
     overflow-x: hidden;
     background: var(--phonespecs-page);
     color: #212529;
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
 }
 
 .site-header .navbar-brand {
@@ -224,7 +231,7 @@ body {
 .public-sidebar {
     min-width: 0;
     position: sticky;
-    top: 1rem;
+    top: calc(4.5rem + 1rem);
 }
 
 .public-main {
@@ -614,8 +621,6 @@ body {
 
 .admin-header {
     flex-shrink: 0;
-    position: relative;
-    z-index: 10;
 }
 
 .admin-main {
@@ -843,139 +848,5 @@ body {
     .admin-content {
         overflow: visible;
         padding: 1rem;
-    }
-
-    .admin-content .table {
-        min-width: 760px;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 991.98px) {
-    .admin-sidebar {
-        width: 205px;
-        min-width: 205px;
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
-| Global scroll behavior
-|--------------------------------------------------------------------------
-*/
-
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 1rem;
-}
-
-body {
-    overflow-x: hidden;
-}
-
-.admin-body {
-    min-height: 100vh;
-    height: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-.admin-shell {
-    min-height: 100vh;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.admin-header {
-    position: sticky;
-    top: 0;
-    z-index: 1030;
-}
-
-.admin-main {
-    display: block;
-    flex: none;
-    min-height: 0;
-    overflow: visible;
-}
-
-.admin-main-shell {
-    width: 100%;
-    max-width: 1180px;
-    height: auto;
-    min-height: 0;
-    margin-left: auto;
-    margin-right: auto;
-    display: grid;
-    grid-template-columns: 230px minmax(0, 1fr);
-    align-items: start;
-    overflow: visible;
-}
-
-.admin-sidebar {
-    width: 230px;
-    min-width: 230px;
-    position: sticky;
-    top: 56px;
-    max-height: calc(100vh - 56px);
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.admin-content {
-    min-width: 0;
-    min-height: 0;
-    overflow: visible;
-    padding: 1.5rem 0 3rem 1.5rem;
-}
-
-.admin-content-inner {
-    width: 100%;
-    min-width: 0;
-}
-
-.public-layout {
-    min-width: 0;
-}
-
-.public-sidebar {
-    min-width: 0;
-    position: sticky;
-    top: 1rem;
-    align-self: start;
-}
-
-.public-main {
-    min-width: 0;
-    overflow: visible;
-}
-
-@media (max-width: 991.98px) {
-    .public-sidebar {
-        position: static;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .admin-header {
-        position: static;
-    }
-
-    .admin-main-shell {
-        display: block;
-        max-width: 100%;
-    }
-
-    .admin-sidebar {
-        position: static;
-        width: 100%;
-        min-width: 0;
-        max-height: none;
-        overflow: visible;
-    }
-
-    .admin-content {
-        overflow: visible;
-        padding: 1rem 0 2rem;
     }
 }
