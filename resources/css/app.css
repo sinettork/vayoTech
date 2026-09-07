@@ -267,6 +267,333 @@ body {
     }
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| Device specification page
+|--------------------------------------------------------------------------
+*/
+
+.device-breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .4rem;
+    color: var(--phonespecs-muted);
+}
+
+.device-breadcrumb a {
+    color: #495057;
+    text-decoration: none;
+}
+
+.device-breadcrumb a:hover {
+    color: #0d6efd;
+}
+
+.device-spec-hero {
+    border: 1px solid var(--phonespecs-border);
+    background: #fff;
+}
+
+.device-spec-hero-main {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    min-height: 310px;
+}
+
+.device-spec-image-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #f8f9fa;
+    border-right: 1px solid var(--phonespecs-border);
+}
+
+.device-spec-image {
+    display: block;
+    width: 100%;
+    height: 270px;
+    object-fit: contain;
+}
+
+.device-spec-image-placeholder {
+    color: #868e96;
+    font-size: .8rem;
+}
+
+.device-spec-hero-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 28px 30px;
+}
+
+.device-spec-brand-row {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    margin-bottom: .55rem;
+    color: var(--phonespecs-muted);
+    font-size: .78rem;
+}
+
+.device-spec-brand-row a {
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.device-spec-hero-copy h1 {
+    margin: 0 0 .45rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.05;
+}
+
+.device-spec-release {
+    margin: 0;
+    color: var(--phonespecs-muted);
+    font-size: .9rem;
+}
+
+.device-spec-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: 1.25rem;
+}
+
+.device-key-specs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0);
+}
+
+.device-key-spec {
+    min-width: 0;
+    padding: 11px 12px;
+    border-left: 1px solid var(--phonespecs-border);
+    background: #f8f9fa;
+}
+
+.device-key-spec:first-child {
+    border-left: 0;
+}
+
+.device-key-spec span {
+    display: block;
+    color: var(--phonespecs-muted);
+    font-size: .7rem;
+    margin-bottom: 3px;
+}
+
+.device-key-spec strong {
+    display: block;
+    overflow: hidden;
+    font-size: .85rem;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.device-section-nav {
+    display: flex;
+    align-items: stretch;
+    overflow-x: auto;
+    background: #212529;
+}
+
+.device-section-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 15px;
+    color: rgba(255, 255, 255, .72);
+    border-right: 1px solid rgba(255, 255, 255, .08);
+    text-decoration: none;
+    font-size: .78rem;
+    white-space: nowrap;
+}
+
+.device-section-nav a:hover,
+.device-section-nav a.active {
+    color: #fff;
+    background: #343a40;
+}
+
+.device-data-section {
+    scroll-margin-top: 1rem;
+}
+
+.device-section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.device-section-heading > div > span {
+    display: block;
+    color: var(--phonespecs-muted);
+    font-size: .7rem;
+    margin-bottom: .2rem;
+}
+
+.device-section-heading h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.device-data-table-wrap,
+.device-spec-groups {
+    border: 1px solid var(--phonespecs-border);
+    background: #fff;
+}
+
+.device-data-table,
+.device-spec-table {
+    font-size: .82rem;
+}
+
+.device-data-table thead th,
+.device-spec-table th {
+    background: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+}
+
+.device-data-table th,
+.device-data-table td,
+.device-spec-table th,
+.device-spec-table td {
+    border-color: var(--phonespecs-border);
+    vertical-align: middle;
+}
+
+.device-data-table th,
+.device-data-table td {
+    padding: .7rem .8rem;
+}
+
+.device-variant-default td {
+    background: #f3f7ff;
+}
+
+.device-spec-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+}
+
+.device-spec-tabs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 10px;
+    border: 1px solid #ced4da;
+    background: #fff;
+    color: #495057;
+    text-decoration: none;
+    font-size: .75rem;
+    border-radius: 2px;
+}
+
+.device-spec-tabs a:hover {
+    border-color: #adb5bd;
+    color: #0d6efd;
+}
+
+.device-spec-groups {
+    overflow: hidden;
+}
+
+.device-spec-group + .device-spec-group {
+    border-top: 1px solid var(--phonespecs-border);
+}
+
+.device-spec-group-title {
+    padding: .65rem .8rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--phonespecs-border);
+}
+
+.device-spec-group-title h3 {
+    margin: 0;
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.device-spec-table th {
+    width: 30%;
+    padding: .58rem .75rem;
+}
+
+.device-spec-table td {
+    padding: .58rem .75rem;
+}
+
+.device-empty-specs {
+    padding: 2.5rem 1.25rem;
+    text-align: center;
+    border: 1px solid var(--phonespecs-border);
+    background: #fff;
+}
+
+.device-empty-specs h3 {
+    margin-bottom: .4rem;
+    font-size: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .device-spec-hero-main {
+        display: block;
+    }
+
+    .device-spec-image-panel {
+        min-height: 250px;
+        border-right: 0;
+        border-bottom: 1px solid var(--phonespecs-border);
+    }
+
+    .device-spec-image {
+        height: 220px;
+    }
+
+    .device-spec-hero-copy {
+        padding: 22px;
+    }
+
+    .device-key-specs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .device-key-spec {
+        border-left: 0;
+        border-top: 1px solid var(--phonespecs-border);
+    }
+
+    .device-key-spec:nth-child(odd) {
+        border-right: 1px solid var(--phonespecs-border);
+    }
+
+    .device-key-spec:nth-child(-n + 2) {
+        border-top: 0;
+    }
+
+    .device-data-table,
+    .device-spec-table {
+        min-width: 620px;
+    }
+
+    .device-section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
 /*
 |--------------------------------------------------------------------------
 | Admin
